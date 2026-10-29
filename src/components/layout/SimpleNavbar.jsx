@@ -1,9 +1,7 @@
-// AgriTwin — Farmer-Friendly Main Navigation
-// Clean, simple navigation with exactly 6 main items:
-// 1. 🏠 Home, 2. 🌾 My Fields, 3. 💧 Water, 4. 🌤️ Weather, 5. 🌱 Plants, 6. 🔔 Alerts
-// Plus expandable "More" section for advanced features.
+// AgriTwin — Farmer-Friendly Main Navigation (PRD Section 4)
+// Clean, simple navigation bar with icons and friendly text labels.
 
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   Home, 
   MapPin, 
@@ -21,45 +19,35 @@ import {
   Leaf,
   ShieldAlert,
   Camera,
-  Bell,
-  ChevronDown,
-  ChevronUp,
-  Plus
+  Bell
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useFields } from '../../context/FieldsContext';
 
-export default function SimpleNavbar({ currentTab, setTab, onOpenAddField }) {
+export default function SimpleNavbar({ currentTab, setTab, onOpenAddField, onOpenDemo }) {
   const { logout, user } = useAuth();
   const { activeField } = useFields();
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
 
-  // Requirement: 6 Main Navigation Items
-  const mainNavItems = [
+  const farmerNavItems = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'my-fields', label: 'My Fields', icon: MapPin },
-    { id: 'water', label: 'Water', icon: Droplets },
+    { id: 'field-monitor', label: '3D Field Twin', icon: Layers },
+    { id: 'plant-health', label: 'Plant & Pest Health', icon: Leaf },
+    { id: 'animal-alerts', label: 'Animal Intrusion', icon: ShieldAlert },
+    { id: 'field-camera', label: 'Field Camera', icon: Camera },
+    { id: 'alerts', label: 'Real-Time Alerts', icon: Bell },
     { id: 'weather', label: 'Weather', icon: CloudSun },
-    { id: 'plant-health', label: 'Plants', icon: Leaf },
-    { id: 'alerts', label: 'Alerts', icon: Bell }
+    { id: 'water', label: 'Water', icon: Droplets },
+    { id: 'field-history', label: 'Field History', icon: BarChart2 },
+    { id: 'what-if', label: 'What-If', icon: CloudRain },
+    { id: 'what-may-happen', label: 'What May Happen', icon: Sparkles },
+    { id: 'reports', label: 'Reports', icon: HelpCircle }
   ];
 
-  // Secondary & Advanced features under "More"
-  const moreNavItems = [
-    { id: 'field-monitor', label: '3D Field View', icon: Layers, desc: 'Interactive 3D field model' },
-    { id: 'animal-alerts', label: 'Animal Alert', icon: ShieldAlert, desc: 'Boundary intrusion detection' },
-    { id: 'field-history', label: 'Field History', icon: BarChart2, desc: 'Historical moisture & rain' },
-    { id: 'what-if', label: 'Try Weather Changes', icon: CloudRain, desc: 'Simulate rain & heatwaves' },
-    { id: 'what-may-happen', label: 'What May Happen', icon: Sparkles, desc: '48h predictive trends' },
-    { id: 'reports', label: 'Farm Reports', icon: HelpCircle, desc: 'Downloadable summary' },
-    { id: 'field-camera', label: 'Field Camera', icon: Camera, desc: 'Camera snapshot feeds' },
-    { id: 'raw-sensors', label: 'Sensor Data', icon: Terminal, desc: 'Raw telemetry records' },
-    { id: 'demo-controls', label: 'Demo Mode', icon: Sliders, desc: 'Presentation triggers' },
-    { id: 'settings', label: 'Settings', icon: SettingsIcon, desc: 'Field & demo thresholds' },
-    { id: 'how-it-works', label: 'Help & Guide', icon: HelpCircle, desc: 'How AgriTwin works' }
+  const technicalNavItems = [
+    { id: 'raw-sensors', label: 'Sensor Data', icon: Terminal },
+    { id: 'demo-controls', label: 'Demo Controls', icon: Sliders }
   ];
-
-  const isMoreActive = moreNavItems.some(item => item.id === currentTab);
 
   return (
     <aside className="sidebar">
@@ -70,7 +58,7 @@ export default function SimpleNavbar({ currentTab, setTab, onOpenAddField }) {
           <div className="sidebar-title">
             <span>AgriTwin</span>
           </div>
-          <div className="sidebar-tagline">Smart Agriculture</div>
+          <div className="sidebar-tagline">Smart Field Data</div>
         </div>
       </div>
 
@@ -92,26 +80,26 @@ export default function SimpleNavbar({ currentTab, setTab, onOpenAddField }) {
                 {activeField?.name || 'My Farm'}
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--emerald-400)' }}>
-                {activeField?.crop || 'Select Crop'} &bull; {activeField?.area || '2.4 Acres'}
+                {activeField?.crop} &bull; {activeField?.area}
               </div>
             </div>
           </div>
           <button 
             onClick={onOpenAddField}
-            title="Add field"
+            title="Add another field"
             style={{
               background: 'var(--emerald-500)',
               border: 'none',
               color: '#fff',
               borderRadius: '50%',
-              width: '26px',
-              height: '26px',
+              width: '24px',
+              height: '24px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
               fontWeight: 800,
-              fontSize: '15px'
+              fontSize: '14px'
             }}
           >
             +
@@ -119,10 +107,10 @@ export default function SimpleNavbar({ currentTab, setTab, onOpenAddField }) {
         </div>
       </div>
 
-      {/* 6 Core Main Farmer Navigation Items */}
+      {/* Primary Farmer Navigation Items */}
       <div className="sidebar-nav-group">
         <span className="sidebar-section-label">FARM MENU</span>
-        {mainNavItems.map(item => {
+        {farmerNavItems.map(item => {
           const Icon = item.icon;
           const isActive = currentTab === item.id;
           return (
@@ -130,71 +118,33 @@ export default function SimpleNavbar({ currentTab, setTab, onOpenAddField }) {
               key={item.id}
               onClick={() => setTab(item.id)}
               className={`nav-link ${isActive ? 'active' : ''}`}
-              style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%', cursor: 'pointer' }}
+              style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%' }}
             >
               <Icon size={18} color={isActive ? 'var(--emerald-400)' : 'var(--text-muted)'} />
               <span>{item.label}</span>
             </button>
           );
         })}
+      </div>
 
-        {/* 7. Collapsible "More" Menu for Advanced Features */}
-        <button
-          onClick={() => setIsMoreOpen(!isMoreOpen)}
-          className={`nav-link ${isMoreActive ? 'active' : ''}`}
-          style={{
-            background: 'none',
-            border: 'none',
-            textAlign: 'left',
-            width: '100%',
-            cursor: 'pointer',
-            marginTop: '4px',
-            justifyContent: 'space-between',
-            paddingRight: '12px'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '1.1rem' }}>☰</span>
-            <span>More Features</span>
-          </div>
-          {isMoreOpen ? <ChevronUp size={15} color="var(--text-muted)" /> : <ChevronDown size={15} color="var(--text-muted)" />}
-        </button>
-
-        {isMoreOpen && (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '2px',
-            paddingLeft: '14px',
-            marginTop: '4px',
-            borderLeft: '2px solid rgba(16, 185, 129, 0.2)',
-            marginLeft: '12px'
-          }}>
-            {moreNavItems.map(item => {
-              const Icon = item.icon;
-              const isActive = currentTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setTab(item.id)}
-                  className={`nav-link ${isActive ? 'active' : ''}`}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    textAlign: 'left',
-                    width: '100%',
-                    cursor: 'pointer',
-                    fontSize: '0.84rem',
-                    padding: '8px 10px'
-                  }}
-                >
-                  <Icon size={15} color={isActive ? 'var(--emerald-400)' : 'var(--text-dim)'} />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        )}
+      {/* Presentation & Technical Mode Section (PRD Section 40) */}
+      <div className="sidebar-nav-group" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '10px' }}>
+        <span className="sidebar-section-label">DEMO / PRESENTATION</span>
+        {technicalNavItems.map(item => {
+          const Icon = item.icon;
+          const isActive = currentTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setTab(item.id)}
+              className={`nav-link ${isActive ? 'active' : ''}`}
+              style={{ background: 'none', border: 'none', textAlign: 'left', width: '100%' }}
+            >
+              <Icon size={17} color={isActive ? 'var(--emerald-400)' : 'var(--text-muted)'} />
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* User / Logout */}
