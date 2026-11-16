@@ -5,13 +5,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { useFields } from '../context/FieldsContext';
 import { useTelemetry } from '../context/TelemetryContext';
+import { useLanguage } from '../context/LanguageContext';
 import DynamicDigitalTwin from '../components/3d/DynamicDigitalTwin';
 import { Layers, Droplets, MapPin, Sparkles, CheckCircle2, RotateCcw } from 'lucide-react';
 
 export default function FieldMonitor() {
   const { activeField } = useFields();
-  const { zones, waterZone2, isIrrigatingZone2 } = useTelemetry();
+  const { zones, waterZone2, isIrrigatingZone2, activeSoil } = useTelemetry();
+  const { t } = useLanguage();
   const [viewMode, setViewMode] = useState('3d'); // '3d' or '2d'
+
+  const fc = activeSoil?.fc ?? 18.0;
+  const pwp = activeSoil?.pwp ?? 8.0;
+  const refillThreshold = parseFloat((fc - 0.40 * (fc - pwp)).toFixed(1));
 
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -100,10 +106,9 @@ export default function FieldMonitor() {
       {/* Header */}
       <div className="page-header">
         <div className="page-header-text">
-          <h1>Field Monitor & Digital Twin</h1>
+          <h1>{t('fieldMonitor.title')}</h1>
           <p>
-            Virtual Cyber-Physical model of <strong>{activeField?.name}</strong>. 
-            Visualizes 4 field management zones, soil water status, and animated watering sprinklers.
+            {t('fieldMonitor.subtitle')}
           </p>
         </div>
 
@@ -120,14 +125,14 @@ export default function FieldMonitor() {
             className={`btn btn-sm ${viewMode === '3d' ? 'btn-primary' : 'btn-secondary'}`}
             style={{ border: 'none', background: viewMode === '3d' ? 'var(--emerald-500)' : 'transparent', color: viewMode === '3d' ? '#fff' : 'var(--text-muted)' }}
           >
-            3D Field Twin
+            {t('fieldMonitor.tab3D')}
           </button>
           <button
             onClick={() => setViewMode('2d')}
             className={`btn btn-sm ${viewMode === '2d' ? 'btn-primary' : 'btn-secondary'}`}
             style={{ border: 'none', background: viewMode === '2d' ? 'var(--emerald-500)' : 'transparent', color: viewMode === '2d' ? '#fff' : 'var(--text-muted)' }}
           >
-            2D Map Boundary
+            {t('fieldMonitor.tab2D')}
           </button>
         </div>
       </div>
@@ -143,13 +148,18 @@ export default function FieldMonitor() {
 
       {/* 4-Zone Status Cards with Text Labels (PRD Section 12) */}
       <div>
-        <h3 style={{ fontSize: '1.2rem', color: '#fff', marginBottom: '14px' }}>
-          Field Zones Condition (Divided into 4 Plots)
-        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+          <h3 style={{ fontSize: '1.2rem', color: '#fff', margin: 0 }}>
+            {t('fieldMonitor.zonesConditionTitle')}
+          </h3>
+          <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)', background: 'rgba(255,255,255,0.05)', padding: '3px 8px', borderRadius: '4px' }}>
+            ℹ️ {t('fieldMonitor.demoQuadrantsNotice')}
+          </span>
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
           {zones.map(z => {
-            const isLow = z.soilWater < 25;
-            const isWatch = z.soilWater >= 25 && z.soilWater < 40;
+            const isLow = z.status === 'Needs Water' || z.soilWater <= refillThreshold;
+            const isWatch = z.status === 'Watch' || (z.soilWater > refillThreshold && z.soilWater < fc);
 
             return (
               <div 
@@ -171,14 +181,14 @@ export default function FieldMonitor() {
                     background: isLow ? 'rgba(239, 68, 68, 0.2)' : isWatch ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)',
                     color: isLow ? '#f87171' : isWatch ? '#fbbf24' : '#34d399'
                   }}>
-                    {isLow ? '🔴 Needs Water' : isWatch ? '🟡 Watch' : '🟢 Good'}
+                    {isLow ? t('fieldMonitor.statusNeedsWater') : isWatch ? t('fieldMonitor.statusWatch') : t('fieldMonitor.statusGood')}
                   </span>
                 </div>
 
                 <div style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', margin: '4px 0' }}>
                   {z.soilWater?.toFixed(1)}%
                 </div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Soil Water Content</span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t('fieldMonitor.soilWaterContent')}</span>
 
                 {isLow && (
                   <button 
@@ -187,7 +197,7 @@ export default function FieldMonitor() {
                     style={{ width: '100%', marginTop: '14px' }}
                   >
                     <Droplets size={14} />
-                    <span>{isIrrigatingZone2 ? 'Sprinklers Active...' : 'Water This Zone'}</span>
+                    <span>{isIrrigatingZone2 ? t('fieldMonitor.sprinklersActive') : t('fieldMonitor.waterThisZone')}</span>
                   </button>
                 )}
               </div>

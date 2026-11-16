@@ -1,0 +1,1010 @@
+[
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "home",
+    "lang": "en",
+    "passed": true,
+    "file": "home_en_320x568.png",
+    "size": 74384
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "home",
+    "lang": "kn",
+    "passed": true,
+    "file": "home_kn_320x568.png",
+    "size": 77292
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "home",
+    "lang": "hi",
+    "passed": true,
+    "file": "home_hi_320x568.png",
+    "size": 84862
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "water",
+    "lang": "en",
+    "passed": true,
+    "file": "water_en_320x568.png",
+    "size": 98689
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "water",
+    "lang": "kn",
+    "passed": true,
+    "file": "water_kn_320x568.png",
+    "size": 85424
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "water",
+    "lang": "hi",
+    "passed": true,
+    "file": "water_hi_320x568.png",
+    "size": 84862
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "alerts",
+    "lang": "en",
+    "passed": true,
+    "file": "alerts_en_320x568.png",
+    "size": 85499
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "alerts",
+    "lang": "kn",
+    "passed": true,
+    "file": "alerts_kn_320x568.png",
+    "size": 85619
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "weather",
+    "lang": "en",
+    "passed": true,
+    "file": "weather_en_320x568.png",
+    "size": 75174
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "field-monitor",
+    "lang": "en",
+    "passed": true,
+    "file": "field-monitor_en_320x568.png",
+    "size": 72188
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "plant-health",
+    "lang": "en",
+    "passed": true,
+    "file": "plant-health_en_320x568.png",
+    "size": 65851
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "reports",
+    "lang": "en",
+    "passed": true,
+    "file": "reports_en_320x568.png",
+    "size": 55759
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "what-if",
+    "lang": "en",
+    "passed": true,
+    "file": "what-if_en_320x568.png",
+    "size": 74384
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "settings",
+    "lang": "en",
+    "passed": true,
+    "file": "settings_en_320x568.png",
+    "size": 74384
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "raw-sensors",
+    "lang": "en",
+    "passed": true,
+    "file": "raw-sensors_en_320x568.png",
+    "size": 74384
+  },
+  {
+    "viewport": "320x568",
+    "device": "iPhone SE (1st gen)",
+    "page": "my-fields",
+    "lang": "en",
+    "passed": true,
+    "file": "my-fields_en_320x568.png",
+    "size": 70447
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "home",
+    "lang": "en",
+    "passed": true,
+    "file": "home_en_360x800.png",
+    "size": 123529
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "home",
+    "lang": "kn",
+    "passed": true,
+    "file": "home_kn_360x800.png",
+    "size": 126303
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "home",
+    "lang": "hi",
+    "passed": true,
+    "file": "home_hi_360x800.png",
+    "size": 142034
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "water",
+    "lang": "en",
+    "passed": true,
+    "file": "water_en_360x800.png",
+    "size": 148881
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "water",
+    "lang": "kn",
+    "passed": true,
+    "file": "water_kn_360x800.png",
+    "size": 142495
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "water",
+    "lang": "hi",
+    "passed": true,
+    "file": "water_hi_360x800.png",
+    "size": 142034
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "alerts",
+    "lang": "en",
+    "passed": true,
+    "file": "alerts_en_360x800.png",
+    "size": 122245
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "alerts",
+    "lang": "kn",
+    "passed": true,
+    "file": "alerts_kn_360x800.png",
+    "size": 118558
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "weather",
+    "lang": "en",
+    "passed": true,
+    "file": "weather_en_360x800.png",
+    "size": 98686
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "field-monitor",
+    "lang": "en",
+    "passed": true,
+    "file": "field-monitor_en_360x800.png",
+    "size": 108173
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "plant-health",
+    "lang": "en",
+    "passed": true,
+    "file": "plant-health_en_360x800.png",
+    "size": 93714
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "reports",
+    "lang": "en",
+    "passed": true,
+    "file": "reports_en_360x800.png",
+    "size": 76178
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "what-if",
+    "lang": "en",
+    "passed": true,
+    "file": "what-if_en_360x800.png",
+    "size": 123529
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "settings",
+    "lang": "en",
+    "passed": true,
+    "file": "settings_en_360x800.png",
+    "size": 123529
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "raw-sensors",
+    "lang": "en",
+    "passed": true,
+    "file": "raw-sensors_en_360x800.png",
+    "size": 123529
+  },
+  {
+    "viewport": "360x800",
+    "device": "Standard Android",
+    "page": "my-fields",
+    "lang": "en",
+    "passed": true,
+    "file": "my-fields_en_360x800.png",
+    "size": 90764
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "home",
+    "lang": "en",
+    "passed": true,
+    "file": "home_en_375x812.png",
+    "size": 129890
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "home",
+    "lang": "kn",
+    "passed": true,
+    "file": "home_kn_375x812.png",
+    "size": 130177
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "home",
+    "lang": "hi",
+    "passed": true,
+    "file": "home_hi_375x812.png",
+    "size": 146943
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "water",
+    "lang": "en",
+    "passed": true,
+    "file": "water_en_375x812.png",
+    "size": 153872
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "water",
+    "lang": "kn",
+    "passed": true,
+    "file": "water_kn_375x812.png",
+    "size": 146594
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "water",
+    "lang": "hi",
+    "passed": true,
+    "file": "water_hi_375x812.png",
+    "size": 146943
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "alerts",
+    "lang": "en",
+    "passed": true,
+    "file": "alerts_en_375x812.png",
+    "size": 129780
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "alerts",
+    "lang": "kn",
+    "passed": true,
+    "file": "alerts_kn_375x812.png",
+    "size": 125595
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "weather",
+    "lang": "en",
+    "passed": true,
+    "file": "weather_en_375x812.png",
+    "size": 103286
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "field-monitor",
+    "lang": "en",
+    "passed": true,
+    "file": "field-monitor_en_375x812.png",
+    "size": 120294
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "plant-health",
+    "lang": "en",
+    "passed": true,
+    "file": "plant-health_en_375x812.png",
+    "size": 96656
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "reports",
+    "lang": "en",
+    "passed": true,
+    "file": "reports_en_375x812.png",
+    "size": 78885
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "what-if",
+    "lang": "en",
+    "passed": true,
+    "file": "what-if_en_375x812.png",
+    "size": 129890
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "settings",
+    "lang": "en",
+    "passed": true,
+    "file": "settings_en_375x812.png",
+    "size": 129890
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "raw-sensors",
+    "lang": "en",
+    "passed": true,
+    "file": "raw-sensors_en_375x812.png",
+    "size": 129890
+  },
+  {
+    "viewport": "375x812",
+    "device": "iPhone X / 12 mini",
+    "page": "my-fields",
+    "lang": "en",
+    "passed": true,
+    "file": "my-fields_en_375x812.png",
+    "size": 94929
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "home",
+    "lang": "en",
+    "passed": true,
+    "file": "home_en_390x844.png",
+    "size": 134469
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "home",
+    "lang": "kn",
+    "passed": true,
+    "file": "home_kn_390x844.png",
+    "size": 140556
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "home",
+    "lang": "hi",
+    "passed": true,
+    "file": "home_hi_390x844.png",
+    "size": 159685
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "water",
+    "lang": "en",
+    "passed": true,
+    "file": "water_en_390x844.png",
+    "size": 159579
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "water",
+    "lang": "kn",
+    "passed": true,
+    "file": "water_kn_390x844.png",
+    "size": 157907
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "water",
+    "lang": "hi",
+    "passed": true,
+    "file": "water_hi_390x844.png",
+    "size": 159685
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "alerts",
+    "lang": "en",
+    "passed": true,
+    "file": "alerts_en_390x844.png",
+    "size": 139623
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "alerts",
+    "lang": "kn",
+    "passed": true,
+    "file": "alerts_kn_390x844.png",
+    "size": 138792
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "weather",
+    "lang": "en",
+    "passed": true,
+    "file": "weather_en_390x844.png",
+    "size": 110293
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "field-monitor",
+    "lang": "en",
+    "passed": true,
+    "file": "field-monitor_en_390x844.png",
+    "size": 125222
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "plant-health",
+    "lang": "en",
+    "passed": true,
+    "file": "plant-health_en_390x844.png",
+    "size": 98559
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "reports",
+    "lang": "en",
+    "passed": true,
+    "file": "reports_en_390x844.png",
+    "size": 83007
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "what-if",
+    "lang": "en",
+    "passed": true,
+    "file": "what-if_en_390x844.png",
+    "size": 134469
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "settings",
+    "lang": "en",
+    "passed": true,
+    "file": "settings_en_390x844.png",
+    "size": 134469
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "raw-sensors",
+    "lang": "en",
+    "passed": true,
+    "file": "raw-sensors_en_390x844.png",
+    "size": 134469
+  },
+  {
+    "viewport": "390x844",
+    "device": "iPhone 12 / 13 / 14",
+    "page": "my-fields",
+    "lang": "en",
+    "passed": true,
+    "file": "my-fields_en_390x844.png",
+    "size": 100648
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "home",
+    "lang": "en",
+    "passed": true,
+    "file": "home_en_430x932.png",
+    "size": 158646
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "home",
+    "lang": "kn",
+    "passed": true,
+    "file": "home_kn_430x932.png",
+    "size": 164282
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "home",
+    "lang": "hi",
+    "passed": true,
+    "file": "home_hi_430x932.png",
+    "size": 183083
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "water",
+    "lang": "en",
+    "passed": true,
+    "file": "water_en_430x932.png",
+    "size": 177573
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "water",
+    "lang": "kn",
+    "passed": true,
+    "file": "water_kn_430x932.png",
+    "size": 181633
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "water",
+    "lang": "hi",
+    "passed": true,
+    "file": "water_hi_430x932.png",
+    "size": 183083
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "alerts",
+    "lang": "en",
+    "passed": true,
+    "file": "alerts_en_430x932.png",
+    "size": 140340
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "alerts",
+    "lang": "kn",
+    "passed": true,
+    "file": "alerts_kn_430x932.png",
+    "size": 160359
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "weather",
+    "lang": "en",
+    "passed": true,
+    "file": "weather_en_430x932.png",
+    "size": 123449
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "field-monitor",
+    "lang": "en",
+    "passed": true,
+    "file": "field-monitor_en_430x932.png",
+    "size": 138677
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "plant-health",
+    "lang": "en",
+    "passed": true,
+    "file": "plant-health_en_430x932.png",
+    "size": 119718
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "reports",
+    "lang": "en",
+    "passed": true,
+    "file": "reports_en_430x932.png",
+    "size": 90941
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "what-if",
+    "lang": "en",
+    "passed": true,
+    "file": "what-if_en_430x932.png",
+    "size": 158623
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "settings",
+    "lang": "en",
+    "passed": true,
+    "file": "settings_en_430x932.png",
+    "size": 158645
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "raw-sensors",
+    "lang": "en",
+    "passed": true,
+    "file": "raw-sensors_en_430x932.png",
+    "size": 158623
+  },
+  {
+    "viewport": "430x932",
+    "device": "iPhone 14 / 15 Pro Max",
+    "page": "my-fields",
+    "lang": "en",
+    "passed": true,
+    "file": "my-fields_en_430x932.png",
+    "size": 116983
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "home",
+    "lang": "en",
+    "passed": true,
+    "file": "home_en_768x1024.png",
+    "size": 250538
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "home",
+    "lang": "kn",
+    "passed": true,
+    "file": "home_kn_768x1024.png",
+    "size": 294928
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "home",
+    "lang": "hi",
+    "passed": true,
+    "file": "home_hi_768x1024.png",
+    "size": 260529
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "water",
+    "lang": "en",
+    "passed": true,
+    "file": "water_en_768x1024.png",
+    "size": 280193
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "water",
+    "lang": "kn",
+    "passed": true,
+    "file": "water_kn_768x1024.png",
+    "size": 310561
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "water",
+    "lang": "hi",
+    "passed": true,
+    "file": "water_hi_768x1024.png",
+    "size": 260501
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "alerts",
+    "lang": "en",
+    "passed": true,
+    "file": "alerts_en_768x1024.png",
+    "size": 215668
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "alerts",
+    "lang": "kn",
+    "passed": true,
+    "file": "alerts_kn_768x1024.png",
+    "size": 239730
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "weather",
+    "lang": "en",
+    "passed": true,
+    "file": "weather_en_768x1024.png",
+    "size": 196946
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "field-monitor",
+    "lang": "en",
+    "passed": true,
+    "file": "field-monitor_en_768x1024.png",
+    "size": 205716
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "plant-health",
+    "lang": "en",
+    "passed": true,
+    "file": "plant-health_en_768x1024.png",
+    "size": 176265
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "reports",
+    "lang": "en",
+    "passed": true,
+    "file": "reports_en_768x1024.png",
+    "size": 139776
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "what-if",
+    "lang": "en",
+    "passed": true,
+    "file": "what-if_en_768x1024.png",
+    "size": 250538
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "settings",
+    "lang": "en",
+    "passed": true,
+    "file": "settings_en_768x1024.png",
+    "size": 250538
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "raw-sensors",
+    "lang": "en",
+    "passed": true,
+    "file": "raw-sensors_en_768x1024.png",
+    "size": 250538
+  },
+  {
+    "viewport": "768x1024",
+    "device": "iPad Tablet",
+    "page": "my-fields",
+    "lang": "en",
+    "passed": true,
+    "file": "my-fields_en_768x1024.png",
+    "size": 180393
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "home",
+    "lang": "en",
+    "passed": true,
+    "file": "home_en_1366x768.png",
+    "size": 286602
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "home",
+    "lang": "kn",
+    "passed": true,
+    "file": "home_kn_1366x768.png",
+    "size": 320477
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "home",
+    "lang": "hi",
+    "passed": true,
+    "file": "home_hi_1366x768.png",
+    "size": 336586
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "water",
+    "lang": "en",
+    "passed": true,
+    "file": "water_en_1366x768.png",
+    "size": 307541
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "water",
+    "lang": "kn",
+    "passed": true,
+    "file": "water_kn_1366x768.png",
+    "size": 352944
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "water",
+    "lang": "hi",
+    "passed": true,
+    "file": "water_hi_1366x768.png",
+    "size": 336586
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "alerts",
+    "lang": "en",
+    "passed": true,
+    "file": "alerts_en_1366x768.png",
+    "size": 263266
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "alerts",
+    "lang": "kn",
+    "passed": true,
+    "file": "alerts_kn_1366x768.png",
+    "size": 298101
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "weather",
+    "lang": "en",
+    "passed": true,
+    "file": "weather_en_1366x768.png",
+    "size": 236918
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "field-monitor",
+    "lang": "en",
+    "passed": true,
+    "file": "field-monitor_en_1366x768.png",
+    "size": 213905
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "plant-health",
+    "lang": "en",
+    "passed": true,
+    "file": "plant-health_en_1366x768.png",
+    "size": 213999
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "reports",
+    "lang": "en",
+    "passed": true,
+    "file": "reports_en_1366x768.png",
+    "size": 189329
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "what-if",
+    "lang": "en",
+    "passed": true,
+    "file": "what-if_en_1366x768.png",
+    "size": 286602
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "settings",
+    "lang": "en",
+    "passed": true,
+    "file": "settings_en_1366x768.png",
+    "size": 286602
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "raw-sensors",
+    "lang": "en",
+    "passed": true,
+    "file": "raw-sensors_en_1366x768.png",
+    "size": 286602
+  },
+  {
+    "viewport": "1366x768",
+    "device": "Desktop",
+    "page": "my-fields",
+    "lang": "en",
+    "passed": true,
+    "file": "my-fields_en_1366x768.png",
+    "size": 233336
+  }
+]

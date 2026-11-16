@@ -4,9 +4,11 @@
 import React from 'react';
 import { useTelemetry } from '../context/TelemetryContext';
 import { useFields } from '../context/FieldsContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Sliders, Play, Pause, RotateCcw, Droplets, Thermometer, CloudRain, AlertTriangle, Sparkles, CheckCircle2 } from 'lucide-react';
 
 export default function DemoControls({ setTab }) {
+  const { t } = useLanguage();
   const { activeField } = useFields();
   const {
     simulationSpeed,
@@ -17,8 +19,13 @@ export default function DemoControls({ setTab }) {
     waterZone2,
     resetDemo,
     z2Water,
-    isIrrigatingZone2
+    isIrrigatingZone2,
+    activeSoil
   } = useTelemetry();
+
+  const fc = activeSoil?.fc ?? 18.0;
+  const pwp = activeSoil?.pwp ?? 8.0;
+  const refillThreshold = parseFloat((fc - 0.40 * (fc - pwp)).toFixed(1));
 
   const demoSteps = [
     { step: 1, title: 'Login & Open App', desc: 'Farmer logs in; 1-click Demo Mode available.' },
@@ -26,14 +33,14 @@ export default function DemoControls({ setTab }) {
     { step: 3, title: 'Name Field & Crop', desc: 'Farmer names it "Demo Farm" and picks "Tomato" or custom crop.' },
     { step: 4, title: 'Live Weather Streams', desc: 'Real Open-Meteo weather arrives for field coordinates (Live Temp, Humidity, Rain).' },
     { step: 5, title: 'Open Field Monitor (3D)', desc: '3D canopy generates with 4 dynamic zones based on field location.' },
-    { step: 6, title: 'Zone 2 Soil Water Drops', desc: '42% → 39% → 36% → 33% → 30% → 27% → 24%.' },
+    { step: 6, title: 'Zone 2 Soil Water Drops', desc: '17.8% → 16.5% → 15.0% → 14.0% (Refill) → 12.5% → 11.5%.' },
     { step: 7, title: 'Zone 2 Turns Red', desc: 'Status shifts from 🟢 Good → 🟡 Watch → 🔴 Needs Water.' },
     { step: 8, title: 'Automated Alert & Advice', desc: '"Zone 2 may need water soon. Soil water is going down and little rain is expected."' },
-    { step: 9, title: 'What-If Weather Testing', desc: 'Farmer tests "Hot & Dry" scenario (+3°C, -20% Rain) to observe increased stress.' },
+    { step: 9, title: 'Try Different Weather', desc: 'Farmer tests "Hot & Dry" scenario (+3°C, -20% Rain) to observe increased stress.' },
     { step: 10, title: 'Virtual Irrigation', desc: 'Farmer clicks "Water Zone 2". Sprinkler mist activates in 3D twin.' },
-    { step: 11, title: 'Soil Water Recharges', desc: 'Zone 2 soil water rises: 24% → 30% → 35% → 38%.' },
+    { step: 11, title: 'Soil Water Recharges', desc: 'Zone 2 soil water rises: 11.5% → 14.0% → 16.5% → 17.8% (FC).' },
     { step: 12, title: 'Status Becomes Good 🟢', desc: 'Alert clears and status restores to 🟢 Good.' },
-    { step: 13, title: 'Field History Trend', desc: 'View time-series trend line showing moisture drop and recharge.' },
+    { step: 13, title: 'Past Readings Trend', desc: 'View time-series trend line showing water drop and recharge.' },
     { step: 14, title: 'Summary Report', desc: 'Generate and print complete farmer field summary.' }
   ];
 
@@ -43,39 +50,39 @@ export default function DemoControls({ setTab }) {
       <div className="page-header">
         <div className="page-header-text">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h1>🎮 Presentation Demo Controls</h1>
+            <h1>🎮 {t('demoControls.title')}</h1>
             <span style={{ background: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24', border: '1px solid rgba(245, 158, 11, 0.4)', padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>
               DEMO MODE
             </span>
           </div>
           <p>
-            Quick controls for college presentations to demonstrate the full Digital Twin story.
+            {t('demoControls.subtitle')}
           </p>
         </div>
 
         <button onClick={resetDemo} className="btn btn-secondary">
-          <RotateCcw size={15} /> Reset Demo Baseline
+          <RotateCcw size={15} /> {t('demoControls.resetDemo')}
         </button>
       </div>
 
       {/* Target Zone 2 Status */}
-      <div className="glass-card" style={{ padding: '20px', background: z2Water < 25 ? 'rgba(30, 10, 14, 0.75)' : 'var(--bg-surface-card)' }}>
+      <div className="glass-card" style={{ padding: '20px', background: z2Water <= refillThreshold ? 'rgba(30, 10, 14, 0.75)' : 'var(--bg-surface-card)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
           <div>
             <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700 }}>
               Active Field: {activeField?.name} &bull; Zone 2 Target
             </span>
-            <div style={{ fontSize: '2.2rem', fontWeight: 800, color: z2Water < 25 ? '#f87171' : '#fff' }}>
-              Zone 2 Soil Water: {z2Water?.toFixed(1)}%
+            <div style={{ fontSize: '2.2rem', fontWeight: 800, color: z2Water <= refillThreshold ? '#f87171' : '#fff' }}>
+              Zone 2 {t('fieldMonitor.soilWaterContent')}: {z2Water?.toFixed(1)}%
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: '10px' }}>
             <button onClick={triggerLowMoisture} className="btn btn-danger">
-              <AlertTriangle size={15} /> Trigger Low Soil Water (24%)
+              <AlertTriangle size={15} /> {t('demoControls.triggerLowWaterAlert')}
             </button>
             <button onClick={waterZone2} className="btn btn-water">
-              <Droplets size={15} /> {isIrrigatingZone2 ? 'Watering Active...' : 'Water Zone 2'}
+              <Droplets size={15} /> {isIrrigatingZone2 ? t('fieldMonitor.sprinklersActive') : t('fieldMonitor.waterThisZone')}
             </button>
           </div>
         </div>

@@ -15,8 +15,6 @@ import {
   X,
   Layers,
   Leaf,
-  ShieldAlert,
-  Camera,
   Bell,
   BarChart2,
   CloudRain,
@@ -26,10 +24,12 @@ import {
   Sliders,
   Plus,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Settings as SettingsIcon
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useFields } from '../../context/FieldsContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function MobileBottomNav({
   currentTab,
@@ -40,6 +40,7 @@ export default function MobileBottomNav({
 }) {
   const { logout } = useAuth();
   const { activeField } = useFields();
+  const { t } = useLanguage();
 
   // Internal state if parent doesn't control `isMoreOpen`
   const [internalMoreOpen, setInternalMoreOpen] = useState(false);
@@ -54,38 +55,38 @@ export default function MobileBottomNav({
   // Secondary pages grouped for the "More" slide-up drawer
   const moreSections = [
     {
-      title: 'Digital Twin & Field Health',
+      title: t('nav.fieldTwinAndHealth') || 'Field Twin & Health',
       items: [
-        { id: 'field-monitor', label: '3D Field Twin', icon: Layers, desc: 'Interactive 3D model with moisture & sensors' },
-        { id: 'plant-health', label: 'Plant & Pest Health', icon: Leaf, desc: '2D grid, leaf diagnosis & pest hotspots' },
-        { id: 'animal-alerts', label: 'Animal Intrusion', icon: ShieldAlert, desc: 'Perimeter threat AI detection' },
-        { id: 'field-camera', label: 'Field Camera', icon: Camera, desc: 'Live solar-powered camera feed' },
-        { id: 'alerts', label: 'Real-Time Alerts', icon: Bell, desc: 'Threats, moisture deficits & warnings' }
+        { id: 'field-monitor', label: t('nav.fieldTwin'), icon: Layers, desc: t('fieldTwin.title') },
+        { id: 'plant-health', label: t('nav.plantHealth'), icon: Leaf, desc: t('plantHealth.subtitle') },
+        { id: 'alerts', label: t('nav.alerts'), icon: Bell, desc: t('alerts.subtitle') }
       ]
     },
     {
-      title: 'Simulation & Intelligence',
+      title: t('nav.insightsAndSimulation') || 'Insights & Simulation',
       items: [
-        { id: 'field-history', label: 'Field History', icon: BarChart2, desc: 'Historical soil moisture, temp & rain graphs' },
-        { id: 'what-if', label: 'What-If Simulation', icon: CloudRain, desc: 'Simulate rain, heatwaves & dry spells' },
-        { id: 'what-may-happen', label: 'What May Happen', icon: Sparkles, desc: 'Predictive 48h agronomic forecasts' },
-        { id: 'reports', label: 'Farm Reports', icon: HelpCircle, desc: 'Downloadable irrigation & health summaries' }
+        { id: 'field-history', label: t('nav.pastReadings'), icon: BarChart2, desc: t('pastReadings.subtitle') },
+        { id: 'what-if', label: t('nav.whatIf'), icon: CloudRain, desc: t('whatIf.subtitle') },
+        { id: 'what-may-happen', label: t('nav.whatMayHappen'), icon: Sparkles, desc: t('whatMayHappen.subtitle') },
+        { id: 'reports', label: t('nav.reports'), icon: HelpCircle, desc: t('reports.subtitle') }
       ]
     },
     {
-      title: 'Engineering & Controls',
+      title: t('nav.toolsAndConfig') || 'Tools & Configuration',
       items: [
-        { id: 'raw-sensors', label: 'Sensor Data (IoT)', icon: Terminal, desc: 'Live ESP32 telemetry packet feed' },
-        { id: 'demo-controls', label: 'Demo Mode Controls', icon: Sliders, desc: 'Simulate dry conditions, pests & alerts' }
+        { id: 'raw-sensors', label: t('nav.sensorData'), icon: Terminal, desc: t('sensorData.subtitle') },
+        { id: 'demo-controls', label: t('common.demoMode'), icon: Sliders, desc: t('demoControls.subtitle') },
+        { id: 'settings', label: t('nav.settings'), icon: SettingsIcon, desc: t('settings.subtitle') },
+        { id: 'how-it-works', label: t('nav.help'), icon: HelpCircle, desc: t('help.subtitle') }
       ]
     }
   ];
 
   // Check if active tab is one of the secondary pages inside "More"
   const isSecondaryActive = [
-    'field-monitor', 'plant-health', 'animal-alerts', 'field-camera',
+    'field-monitor', 'plant-health',
     'alerts', 'field-history', 'what-if', 'what-may-happen', 'reports',
-    'raw-sensors', 'demo-controls'
+    'raw-sensors', 'demo-controls', 'settings', 'how-it-works'
   ].includes(currentTab);
 
   return (
@@ -99,10 +100,10 @@ export default function MobileBottomNav({
           type="button"
           onClick={() => handleTabClick('home')}
           className={`mobile-nav-btn ${currentTab === 'home' && !moreOpen ? 'active' : ''}`}
-          aria-label="Home Dashboard"
+          aria-label={t('nav.home')}
         >
           <Home size={21} />
-          <span className="mobile-nav-label">Home</span>
+          <span className="mobile-nav-label">{t('nav.home')}</span>
         </button>
 
         {/* Tab 2: My Fields */}
@@ -110,10 +111,10 @@ export default function MobileBottomNav({
           type="button"
           onClick={() => handleTabClick('my-fields')}
           className={`mobile-nav-btn ${currentTab === 'my-fields' && !moreOpen ? 'active' : ''}`}
-          aria-label="My Fields"
+          aria-label={t('nav.myFields')}
         >
           <MapPin size={21} />
-          <span className="mobile-nav-label">Fields</span>
+          <span className="mobile-nav-label">{t('nav.myFields')}</span>
         </button>
 
         {/* Tab 3: Water */}
@@ -121,10 +122,10 @@ export default function MobileBottomNav({
           type="button"
           onClick={() => handleTabClick('water')}
           className={`mobile-nav-btn ${currentTab === 'water' && !moreOpen ? 'active' : ''}`}
-          aria-label="Water Monitoring"
+          aria-label={t('nav.water')}
         >
           <Droplets size={21} />
-          <span className="mobile-nav-label">Water</span>
+          <span className="mobile-nav-label">{t('nav.water')}</span>
         </button>
 
         {/* Tab 4: Weather */}
@@ -132,10 +133,10 @@ export default function MobileBottomNav({
           type="button"
           onClick={() => handleTabClick('weather')}
           className={`mobile-nav-btn ${currentTab === 'weather' && !moreOpen ? 'active' : ''}`}
-          aria-label="Live Weather"
+          aria-label={t('nav.weather')}
         >
           <CloudSun size={21} />
-          <span className="mobile-nav-label">Weather</span>
+          <span className="mobile-nav-label">{t('nav.weather')}</span>
         </button>
 
         {/* Tab 5: More (Slide-Up Menu Trigger) */}
@@ -143,7 +144,7 @@ export default function MobileBottomNav({
           type="button"
           onClick={() => setMoreOpen(!moreOpen)}
           className={`mobile-nav-btn ${moreOpen || isSecondaryActive ? 'active' : ''}`}
-          aria-label="More Features"
+          aria-label={t('nav.more')}
         >
           <div style={{ position: 'relative', display: 'inline-flex' }}>
             <Menu size={21} />
@@ -162,7 +163,7 @@ export default function MobileBottomNav({
               />
             )}
           </div>
-          <span className="mobile-nav-label">More</span>
+          <span className="mobile-nav-label">{t('nav.more')}</span>
         </button>
       </nav>
 
@@ -229,7 +230,7 @@ export default function MobileBottomNav({
                 }}
               >
                 <Plus size={18} />
-                <span>+ Add New Field on Map</span>
+                <span>{t('nav.addNewFieldMap') || '+ Add New Field on Map'}</span>
               </button>
             </div>
 
@@ -288,7 +289,7 @@ export default function MobileBottomNav({
                   }}
                 >
                   <LogOut size={16} />
-                  <span>Log Out of AgriTwin</span>
+                  <span>{t('nav.logout') || 'Log Out of AgriTwin'}</span>
                 </button>
               </div>
             </div>

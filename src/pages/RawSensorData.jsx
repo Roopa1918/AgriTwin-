@@ -3,21 +3,36 @@
 
 import React, { useState } from 'react';
 import { useTelemetry } from '../context/TelemetryContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Terminal, Download, Radio, Filter } from 'lucide-react';
 
 export default function RawSensorData() {
-  const { zones, liveWeather } = useTelemetry();
+  const { t } = useLanguage();
+  const { zones, liveWeather, activeSoil } = useTelemetry();
+
+  const fc = activeSoil?.fc ?? 18.0;
+  const pwp = activeSoil?.pwp ?? 8.0;
+  const refillThreshold = parseFloat((fc - 0.40 * (fc - pwp)).toFixed(1));
+
+  const isAlertRow = (row) => {
+    if (row.sensor.startsWith('SM-')) {
+      const val = parseFloat(row.value);
+      return !isNaN(val) && val <= refillThreshold;
+    }
+    return false;
+  };
 
   // Create live simulated rows
-  const [streamRows] = useState([
-    { time: '14:32:01', sensor: 'SM-Z02', zone: 'Zone 2', reading: 'Soil Water', value: '25.1%' },
-    { time: '14:32:04', sensor: 'SM-Z02', zone: 'Zone 2', reading: 'Soil Water', value: '24.8%' },
-    { time: '14:32:07', sensor: 'TEMP-01', zone: 'Field', reading: 'Temperature', value: `${liveWeather.temperature}°C` },
-    { time: '14:32:10', sensor: 'HUM-01', zone: 'Field', reading: 'Air Moisture', value: `${liveWeather.humidity}%` },
-    { time: '14:32:13', sensor: 'SM-Z01', zone: 'Zone 1', reading: 'Soil Water', value: `${zones[0]?.soilWater?.toFixed(1) || 41.2}%` },
-    { time: '14:32:16', sensor: 'SM-Z03', zone: 'Zone 3', reading: 'Soil Water', value: `${zones[2]?.soilWater?.toFixed(1) || 38.0}%` },
-    { time: '14:32:19', sensor: 'SM-Z04', zone: 'Zone 4', reading: 'Soil Water', value: `${zones[3]?.soilWater?.toFixed(1) || 43.5}%` }
-  ]);
+  const z2Val = zones[1]?.soilWater ?? 13.5;
+  const streamRows = [
+    { time: '14:32:01', sensor: 'SM-Z02', zone: 'Zone 2', reading: t('fieldMonitor.soilWaterContent'), value: `${(z2Val + 0.3).toFixed(1)}%` },
+    { time: '14:32:04', sensor: 'SM-Z02', zone: 'Zone 2', reading: t('fieldMonitor.soilWaterContent'), value: `${z2Val.toFixed(1)}%` },
+    { time: '14:32:07', sensor: 'TEMP-01', zone: 'Field', reading: t('weather.temperature'), value: `${liveWeather.temperature}°C` },
+    { time: '14:32:10', sensor: 'HUM-01', zone: 'Field', reading: t('weather.humidity'), value: `${liveWeather.humidity}%` },
+    { time: '14:32:13', sensor: 'SM-Z01', zone: 'Zone 1', reading: t('fieldMonitor.soilWaterContent'), value: `${zones[0]?.soilWater?.toFixed(1) || '17.8'}%` },
+    { time: '14:32:16', sensor: 'SM-Z03', zone: 'Zone 3', reading: t('fieldMonitor.soilWaterContent'), value: `${zones[2]?.soilWater?.toFixed(1) || '16.2'}%` },
+    { time: '14:32:19', sensor: 'SM-Z04', zone: 'Zone 4', reading: t('fieldMonitor.soilWaterContent'), value: `${zones[3]?.soilWater?.toFixed(1) || '18.0'}%` }
+  ];
 
   return (
     <div className="page-container">
@@ -25,13 +40,13 @@ export default function RawSensorData() {
       <div className="page-header">
         <div className="page-header-text">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h1>🔧 SENSOR DATA</h1>
+            <h1>🔧 {t('sensorData.title')}</h1>
             <span style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.4)', padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 800 }}>
-              ● LIVE STREAM
+              ● {t('sensorData.liveStreamBadge') || 'LIVE STREAM'}
             </span>
           </div>
           <p>
-            Technical presentation view of simulated IoT soil probe and weather sensor serial packets.
+            {t('sensorData.subtitle')}
           </p>
         </div>
 
@@ -44,7 +59,7 @@ export default function RawSensorData() {
           color: '#fbbf24',
           fontWeight: 700
         }}>
-          SIMULATED SENSOR DATA — DEMONSTRATION MODE
+          {t('sensorData.simulatedNotice') || 'SIMULATED SENSOR DATA — DEMONSTRATION MODE'}
         </span>
       </div>
 
@@ -67,11 +82,11 @@ export default function RawSensorData() {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>
               <thead>
                 <tr style={{ color: 'var(--emerald-400)', borderBottom: '1px solid rgba(16, 185, 129, 0.25)', fontSize: '0.78rem' }}>
-                  <th style={{ padding: '12px' }}>Time</th>
-                  <th style={{ padding: '12px' }}>Sensor</th>
-                  <th style={{ padding: '12px' }}>Zone</th>
-                  <th style={{ padding: '12px' }}>Reading</th>
-                  <th style={{ padding: '12px' }}>Value</th>
+                  <th style={{ padding: '12px' }}>{t('sensorData.colTime') || 'Time'}</th>
+                  <th style={{ padding: '12px' }}>{t('sensorData.colSensor') || 'Sensor'}</th>
+                  <th style={{ padding: '12px' }}>{t('sensorData.colZone') || 'Zone'}</th>
+                  <th style={{ padding: '12px' }}>{t('sensorData.colReading') || 'Reading'}</th>
+                  <th style={{ padding: '12px' }}>{t('sensorData.colValue') || 'Value'}</th>
                 </tr>
               </thead>
               <tbody>
@@ -81,7 +96,7 @@ export default function RawSensorData() {
                     <td style={{ padding: '12px', color: '#38bdf8', fontWeight: 700 }}>{row.sensor}</td>
                     <td style={{ padding: '12px', color: '#fff' }}>{row.zone}</td>
                     <td style={{ padding: '12px', color: '#cbd5e1' }}>{row.reading}</td>
-                    <td style={{ padding: '12px', color: String(row?.value ?? '').includes('24.') || String(row?.value ?? '').includes('25.') ? '#f87171' : 'var(--emerald-400)', fontWeight: 800 }}>
+                    <td style={{ padding: '12px', color: isAlertRow(row) ? '#f87171' : 'var(--emerald-400)', fontWeight: 800 }}>
                       {row.value}
                     </td>
                   </tr>
@@ -93,7 +108,7 @@ export default function RawSensorData() {
           {/* Mobile Card View (< 768px) — PRD Section 11 */}
           <div className="table-mobile-card-view">
             {streamRows.map((row, idx) => {
-              const isAlert = String(row?.value ?? '').includes('24.') || String(row?.value ?? '').includes('25.');
+              const isAlert = isAlertRow(row);
               return (
                 <div
                   key={idx}

@@ -6,13 +6,23 @@ import { firebaseBridge } from '../services/firebase';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(firebaseBridge.getCurrentUser());
+  const [user, setUser] = useState(() => {
+    const current = firebaseBridge.getCurrentUser();
+    if (current) return current;
+    try {
+      const saved = localStorage.getItem('agritwin_demo_user');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return null;
+  });
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
     const unsubscribe = firebaseBridge.onAuthStateChanged((u) => {
-      setUser(u);
+      if (u) {
+        setUser(u);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -98,6 +108,9 @@ export function AuthProvider({ children }) {
     try {
       const u = await firebaseBridge.signInDemo();
       setUser(u);
+      try {
+        localStorage.setItem('agritwin_demo_user', JSON.stringify(u));
+      } catch (e) {}
       return u;
     } finally {
       setLoading(false);
@@ -107,6 +120,9 @@ export function AuthProvider({ children }) {
   // 6. Sign Out
   const logout = async () => {
     await firebaseBridge.signOut();
+    try {
+      localStorage.removeItem('agritwin_demo_user');
+    } catch (e) {}
     setUser(null);
   };
 

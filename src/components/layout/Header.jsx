@@ -3,9 +3,11 @@ import React from 'react';
 import { Menu, Wifi, Sparkles, Sliders, RefreshCw, AlertCircle, ShieldCheck } from 'lucide-react';
 import { useTelemetry } from '../../context/TelemetryContext';
 import { useSettings } from '../../context/SettingsContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { DemoBadge } from '../common/DemoBadge';
 
 export default function Header({ toggleSidebar, openQuickControls }) {
+  const { t } = useLanguage();
   const { isSyncWarning, simulationState, setIsPresentationMode, resetDemo } = useTelemetry();
   const { fieldConfig } = useSettings();
 
@@ -30,7 +32,7 @@ export default function Header({ toggleSidebar, openQuickControls }) {
             </span>
           </div>
           <div className="field-crop">
-            <span>Crop: <strong>{fieldConfig.crop}</strong></span>
+            <span>{t('common.crop') || 'Crop'}: <strong>{fieldConfig.crop}</strong></span>
             <span>&bull;</span>
             <span>{fieldConfig.area}</span>
           </div>
@@ -53,12 +55,12 @@ export default function Header({ toggleSidebar, openQuickControls }) {
           {isSyncWarning ? (
             <>
               <AlertCircle size={15} color="#ef4444" />
-              <span style={{ color: '#fca5a5', fontWeight: 600 }}>● SYNC WARNING</span>
+              <span style={{ color: '#fca5a5', fontWeight: 600 }}>● {t('header.syncWarning') || 'SYNC WARNING'}</span>
             </>
           ) : (
             <>
               <span className="pulse-dot" style={{ background: '#10b981' }} />
-              <span style={{ color: 'var(--emerald-300)', fontWeight: 600 }}>● DIGITAL TWIN SYNCHRONIZED</span>
+              <span style={{ color: 'var(--emerald-300)', fontWeight: 600 }}>● {t('header.twinSynchronized') || 'DIGITAL TWIN SYNCHRONIZED'}</span>
             </>
           )}
         </div>
@@ -73,7 +75,7 @@ export default function Header({ toggleSidebar, openQuickControls }) {
           title="Open quick simulator trigger drawer"
         >
           <Sliders size={15} />
-          <span>Demo Controls</span>
+          <span>{t('header.demoMode') || 'Demo Controls'}</span>
         </button>
 
         {/* Fullscreen Presentation Mode */}
@@ -83,7 +85,7 @@ export default function Header({ toggleSidebar, openQuickControls }) {
           title="Launch full-screen presentation mode"
         >
           <Sparkles size={15} />
-          <span>Presentation Mode</span>
+          <span>{t('nav.presentationMode') || 'Presentation Mode'}</span>
         </button>
       </div>
     </header>

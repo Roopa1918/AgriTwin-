@@ -8,6 +8,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { FieldsProvider, useFields } from './context/FieldsContext';
 import { TelemetryProvider } from './context/TelemetryContext';
 import { SettingsProvider } from './context/SettingsContext';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import LanguageSelector from './components/common/LanguageSelector';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
 import SimpleNavbar from './components/layout/SimpleNavbar';
@@ -28,8 +30,6 @@ import Reports from './pages/Reports';
 import RawSensorData from './pages/RawSensorData';
 import DemoControls from './pages/DemoControls';
 import PlantHealthPage from './pages/PlantHealthPage';
-import AnimalAlertsPage from './pages/AnimalAlertsPage';
-import FieldCameraPage from './pages/FieldCameraPage';
 import Alerts from './pages/Alerts';
 import Settings from './pages/Settings';
 import HowItWorks from './pages/HowItWorks';
@@ -38,6 +38,7 @@ import MobileBottomNav from './components/layout/MobileBottomNav';
 import { Plus, MapPin, Sparkles, LogOut, ChevronDown, Bell, Menu } from 'lucide-react';
 
 function AppContent() {
+  const { t } = useLanguage();
   const { isAuthenticated, logout, isDemo } = useAuth();
   const { activeField, fields, setActiveFieldId, loadDemoField } = useFields();
   const [currentTab, setTab] = useState('home');
@@ -73,14 +74,9 @@ function AppContent() {
         return <FieldMonitor />;
       case 'plant-health':
         return <PlantHealthPage onNavigateToAlerts={() => setTab('alerts')} />;
-      case 'animal-alerts':
-        return <AnimalAlertsPage onNavigateTo3D={() => setTab('field-monitor')} />;
-      case 'field-camera':
-        return <FieldCameraPage onNavigateToAnimalAlerts={() => setTab('animal-alerts')} />;
       case 'alerts':
         return (
           <Alerts
-            onNavigateToAnimal={() => setTab('animal-alerts')}
             onNavigateToPlant={() => setTab('plant-health')}
             onNavigateTo3D={() => setTab('field-monitor')}
           />
@@ -149,7 +145,7 @@ function AppContent() {
                 <MapPin size={12} color="var(--emerald-400)" />
                 <span>{activeField?.village || `${activeField?.latitude?.toFixed(2)}°N, ${activeField?.longitude?.toFixed(2)}°E`}</span>
                 <span style={{ color: 'var(--text-dim)', margin: '0 4px' }}>&bull;</span>
-                <span style={{ color: 'var(--emerald-400)', fontWeight: 600 }}>Active Digital Twin</span>
+                <span style={{ color: 'var(--emerald-400)', fontWeight: 600 }}>{t('header.activeDigitalTwin')}</span>
               </div>
             </div>
 
@@ -165,19 +161,21 @@ function AppContent() {
                 borderColor: 'rgba(52, 211, 153, 0.4)'
               }}
             >
-              <span>Change Field</span>
+              <span>{t('header.changeField')}</span>
             </button>
           </div>
 
           {/* Right Header Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <LanguageSelector />
+
             <button
               onClick={() => setIsSelectingField(true)}
               className="btn btn-secondary btn-sm"
               style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <Plus size={15} color="var(--emerald-400)" />
-              <span>+ Add Field on Map</span>
+              <span>{t('header.addFieldOnMap')}</span>
             </button>
 
             <button
@@ -186,7 +184,7 @@ function AppContent() {
               style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <Sparkles size={14} />
-              <span>Demo Mode</span>
+              <span>{t('header.demoMode')}</span>
             </button>
           </div>
         </header>
@@ -205,17 +203,19 @@ function AppContent() {
               title="Click to change field"
             >
               <span>{activeField?.cropIcon || '🌾'}</span>
-              <span className="mobile-field-chip-name">{activeField?.name || 'My Field'}</span>
+              <span className="mobile-field-chip-name">{activeField?.name || t('home.myField')}</span>
             </button>
           </div>
 
-          <div className="mobile-header-actions">
+          <div className="mobile-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <LanguageSelector />
+
             {/* Quick Alerts Bell Shortcut */}
             <button
               type="button"
               onClick={() => setTab('alerts')}
               className="mobile-header-icon-btn"
-              aria-label="View Alerts"
+              aria-label={t('header.viewAlerts')}
             >
               <Bell size={20} />
               <span className="mobile-alert-dot" />
@@ -226,7 +226,7 @@ function AppContent() {
               type="button"
               onClick={() => setIsMoreOpen(!isMoreOpen)}
               className="mobile-header-icon-btn"
-              aria-label="Open Farm Menu"
+              aria-label={t('header.openMenu')}
             >
               <Menu size={22} />
             </button>
@@ -262,15 +262,17 @@ function AppContent() {
 export default function App() {
   return (
     <ErrorBoundary>
-      <SettingsProvider>
-        <AuthProvider>
-          <FieldsProvider>
-            <TelemetryProvider>
-              <AppContent />
-            </TelemetryProvider>
-          </FieldsProvider>
-        </AuthProvider>
-      </SettingsProvider>
+      <LanguageProvider>
+        <SettingsProvider>
+          <AuthProvider>
+            <FieldsProvider>
+              <TelemetryProvider>
+                <AppContent />
+              </TelemetryProvider>
+            </FieldsProvider>
+          </AuthProvider>
+        </SettingsProvider>
+      </LanguageProvider>
     </ErrorBoundary>
   );
 }

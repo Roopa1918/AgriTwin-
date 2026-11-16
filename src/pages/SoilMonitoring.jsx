@@ -53,10 +53,9 @@ export default function SoilMonitoring({ setTab }) {
       {/* Page Header */}
       <div className="page-header">
         <div className="page-header-text">
-          <h1>Soil Moisture & Subsurface Telemetry</h1>
+          <h1>Soil Water & Root-Zone Readings</h1>
           <p>
-            Zone-wise volumetric water content (VWC), dielectric permittivity observations, 
-            and root-zone profile dynamics.
+            Zone-wise soil water levels across your field root zones.
           </p>
         </div>
       </div>

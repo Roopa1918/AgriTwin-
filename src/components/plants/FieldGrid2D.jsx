@@ -1,25 +1,19 @@
 // AgriTwin — Plant-Level Field Grid (2D Matrix Visualization)
 // Features: Row/Col matrix, unique plant IDs (e.g., P-R01-C01), 4 condition states,
-// interactive selection, and algorithmic pest hotspot clustering highlights.
+// and interactive plant selection.
 
 import React from 'react';
-import { AlertCircle, CheckCircle2, AlertTriangle, HelpCircle, Flame } from 'lucide-react';
+import { AlertCircle, CheckCircle2, AlertTriangle, HelpCircle } from 'lucide-react';
 
 export default function FieldGrid2D({
   plants = [],
   selectedPlant = null,
   onSelectPlant,
-  hotspots = [],
   rowsCount = 6,
   colsCount = 6
 }) {
   const [cellZoom, setCellZoom] = React.useState(1.0); // 0.8, 1.0, 1.25
   const [filterStatus, setFilterStatus] = React.useState('ALL'); // 'ALL' | 'healthy' | 'watch' | 'attention'
-
-  // Determine if a specific plant belongs to any active hotspot cluster
-  const isPlantInHotspot = (plantId) => {
-    return (hotspots || []).some(h => Array.isArray(h?.plantIds) && h.plantIds.includes(plantId));
-  };
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -141,39 +135,6 @@ export default function FieldGrid2D({
         <span>👈 Swipe horizontally to explore full field grid 👉</span>
       </div>
 
-      {/* Hotspots Callout Alert */}
-      {hotspots && hotspots.length > 0 && (
-        <div style={{
-          background: 'linear-gradient(90deg, rgba(239, 68, 68, 0.16) 0%, rgba(245, 158, 11, 0.12) 100%)',
-          border: '1px solid rgba(239, 68, 68, 0.4)',
-          borderRadius: 'var(--radius-md)',
-          padding: '10px 14px',
-          marginBottom: '14px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '10px',
-          flexWrap: 'wrap'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ background: 'rgba(239,68,68,0.2)', padding: '6px', borderRadius: '50%' }}>
-              <Flame size={18} color="#ef4444" />
-            </div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#fca5a5' }}>
-                🚨 {hotspots.length} Pest / Disease Cluster{hotspots.length > 1 ? 's' : ''} Detected
-              </div>
-              <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
-                {hotspots.map(h => `${h.name} (${h.plantIds.length} plants)`).join(' • ')}
-              </div>
-            </div>
-          </div>
-          <div style={{ fontSize: '0.72rem', color: '#fbbf24', fontWeight: 600 }}>
-            Pulsating borders in grid
-          </div>
-        </div>
-      )}
-
       {/* 2D Grid Layout Container — Only this container scrolls horizontally */}
       <div 
         className="plant-grid-scroll-box"
@@ -240,7 +201,6 @@ export default function FieldGrid2D({
                   };
 
                   const isSelected = selectedPlant && selectedPlant.id === plant.id;
-                  const inHotspot = isPlantInHotspot(plant.id);
                   const badge = getStatusBadge(plant.status);
 
                   return (
@@ -250,14 +210,10 @@ export default function FieldGrid2D({
                       style={{
                         background: isSelected 
                           ? 'rgba(16, 185, 129, 0.22)' 
-                          : inHotspot 
-                            ? 'rgba(239, 68, 68, 0.12)' 
-                            : 'rgba(255, 255, 255, 0.02)',
+                          : 'rgba(255, 255, 255, 0.02)',
                         border: isSelected
                           ? '2px solid var(--emerald-400)'
-                          : inHotspot
-                            ? '2px dashed rgba(239, 68, 68, 0.7)'
-                            : `1px solid ${badge.border}`,
+                          : `1px solid ${badge.border}`,
                         borderRadius: 'var(--radius-md)',
                         padding: '10px 8px',
                         cursor: 'pointer',
@@ -270,9 +226,7 @@ export default function FieldGrid2D({
                         transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                         boxShadow: isSelected 
                           ? '0 0 16px rgba(16, 185, 129, 0.35)' 
-                          : inHotspot 
-                            ? '0 0 10px rgba(239, 68, 68, 0.25)' 
-                            : 'none',
+                          : 'none',
                         position: 'relative'
                       }}
                       onMouseEnter={(e) => {
@@ -282,20 +236,6 @@ export default function FieldGrid2D({
                         if (!isSelected) e.currentTarget.style.transform = 'translateY(0)';
                       }}
                     >
-                      {/* Hotspot indicator pip */}
-                      {inHotspot && (
-                        <div style={{
-                          position: 'absolute',
-                          top: '4px',
-                          right: '4px',
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          background: '#ef4444',
-                          boxShadow: '0 0 6px #ef4444'
-                        }} />
-                      )}
-
                       {/* Plant Visual Emoji */}
                       <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>
                         {plant.status === 'attention' ? '🍂' : plant.status === 'watch' ? '🌾' : '🌿'}

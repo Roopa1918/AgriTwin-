@@ -1,410 +1,570 @@
-// AgriTwin — Farmer-First Home Dashboard (PRD Section 10, 11, 38)
-// Displays 6 big simple cards, clear field status banner, 4-zone water summary, and today's weather.
+// AgriTwin — Simplified Farmer-First Home Dashboard
+// Designed for real farmers:
+// 1. Simple Welcome Header (Farm, Crop, Greeting)
+// 2. One Main Water Advice Card (Does crop need water? Which zone? Why? What action to take?)
+// 3. Two Simple Information Cards (Today's Weather & Rain Forecast)
+// 4. Optional Field Information (Crop & Field size summary, subtle data honesty notice)
 
 import React from 'react';
 import { useFields } from '../context/FieldsContext';
 import { useTelemetry } from '../context/TelemetryContext';
+import { useLanguage } from '../context/LanguageContext';
 import { 
-  Thermometer, 
-  Wind, 
   Droplets, 
+  Sun, 
   CloudRain, 
-  ShieldCheck, 
-  AlertTriangle, 
-  ArrowRight,
-  Sparkles,
-  MapPin,
-  Clock,
-  Sun,
-  Leaf,
-  ShieldAlert,
-  Camera,
-  Flame
+  ArrowRight
 } from 'lucide-react';
 
 export default function HomeDashboard({ setTab }) {
   const { activeField } = useFields();
+  const { t } = useLanguage();
   const { 
     liveWeather, 
-    zones, 
     avgSoilWater, 
     z2Water, 
-    fieldStatusText, 
-    fieldStatusMessage, 
-    fieldStatusBadge, 
-    waterNeed, 
-    cropCondition,
-    simpleRecommendation,
-    waterZone2,
-    isIrrigatingZone2
+    zones, 
+    waterZone2, 
+    isIrrigatingZone2, 
+    scientificRecommendation 
   } = useTelemetry();
 
+  // Field Data
+  const fieldName = activeField?.name || t('home.myField') || 'My Field';
+  const cropName = activeField?.crop || 'Tomato';
+  const areaText = activeField?.area || '2.5 Acres (1.0 Ha)';
+  const cropIcon = activeField?.cropIcon || '🍅';
+
+  // Data Availability Check — Never invent a recommendation when data is missing
+  const isDataUnavailable = !activeField || !scientificRecommendation || (!avgSoilWater && !z2Water && (!zones || zones.length === 0));
+
+  // Irrigation Status from Unified Recommendation Engine
+  const isWaterLow = !isDataUnavailable && scientificRecommendation?.status === 'NEEDS_WATER';
+
+  // Target Zone Details (e.g. Zone 2 / Zone B)
+  const targetZoneName = isWaterLow 
+    ? (scientificRecommendation?.mostStressedZone?.shortName || scientificRecommendation?.mostStressedZone?.name || 'Zone 2 (Zone B)')
+    : (t('myFields.allZonesAdequate') || 'All 4 Field Zones');
+
+  const targetAreaText = isWaterLow 
+    ? (scientificRecommendation?.targetAreaText || '0.63 Acre Plot') 
+    : areaText;
+
+  // Condition translation helper
+  const getTranslatedCondition = (condition) => {
+    if (!condition) return t('weather.weatherConditions.unavailable') || 'Weather Unavailable';
+    const normalized = condition.toLowerCase().replace(/[^a-z]/g, '');
+    const map = {
+      clearsky: 'clearSky',
+      mainlyclear: 'mainlyClear',
+      partlycloudy: 'partlyCloudy',
+      overcast: 'overcast',
+      foggy: 'foggy',
+      lightdrizzle: 'lightDrizzle',
+      slightrain: 'slightRain',
+      moderaterain: 'moderateRain',
+      heavyrain: 'heavyRain',
+      rainshowers: 'rainShowers',
+      thunderstorm: 'thunderstorm',
+      weatherunavailable: 'unavailable'
+    };
+    const key = map[normalized];
+    return key ? (t(`weather.weatherConditions.${key}`) || condition) : condition;
+  };
+
+  // Weather availability check
+  const hasWeatherTemp = typeof liveWeather?.temperature === 'number';
+  const isLive = Boolean(liveWeather?.isLive && !liveWeather?.isStale);
+  const isCached = Boolean(liveWeather?.isStale);
+  const isOffline = Boolean(liveWeather?.isOffline);
+
+  const weatherBadgeText = isLive 
+    ? `🟢 ${t('common.live') || 'Live'} (Open-Meteo)`
+    : isCached 
+    ? `🕒 ${t('common.cached') || 'Cached'} (${liveWeather?.ageHours || 1}h)` 
+    : `⚠️ ${t('home.weatherUnavailable') || 'Offline'}`;
+
+  const tempDisplay = hasWeatherTemp 
+    ? `${liveWeather.temperature}°C` 
+    : (t('home.weatherUnavailable') || 'Unavailable');
+
+  const conditionDisplay = getTranslatedCondition(liveWeather?.condition || 'Partly Cloudy');
+  const conditionIcon = liveWeather?.conditionIcon || '⛅';
+
+  // Tomorrow rain details
+  const tomorrowForecast = liveWeather?.daily?.[1];
+  const tomorrowRain = (typeof tomorrowForecast?.rain === 'number') ? tomorrowForecast.rain : 0.0;
+  const tomorrowProb = tomorrowForecast?.precipitationProbability || 0;
+  const todayRain = (typeof liveWeather?.rainfall === 'number') ? liveWeather.rainfall : 0.0;
+  const hasTomorrowRain = Boolean(!isOffline && tomorrowForecast && tomorrowRain > 0);
+
+  // Dynamic Theme Styling for Main Advice Card
+  const adviceTheme = isDataUnavailable
+    ? {
+        border: 'rgba(245, 158, 11, 0.45)',
+        bg: 'rgba(245, 158, 11, 0.08)',
+        pillBg: 'rgba(245, 158, 11, 0.2)',
+        pillBorder: '#f59e0b',
+        color: '#fbbf24',
+        badge: t('home.farmStatusUnavailable') || 'Farm Status: Data Unavailable'
+      }
+    : isWaterLow
+    ? {
+        border: 'rgba(239, 68, 68, 0.45)',
+        bg: 'rgba(239, 68, 68, 0.08)',
+        pillBg: 'rgba(239, 68, 68, 0.22)',
+        pillBorder: '#ef4444',
+        color: '#f87171',
+        badge: t('home.farmStatusAttention') || 'Attention: Low Moisture in Zone 2'
+      }
+    : {
+        border: 'rgba(16, 185, 129, 0.45)',
+        bg: 'rgba(16, 185, 129, 0.08)',
+        pillBg: 'rgba(16, 185, 129, 0.22)',
+        pillBorder: '#10b981',
+        color: '#34d399',
+        badge: t('home.farmStatusGood') || 'Farm Status: Normal & Healthy'
+      };
+
   return (
-    <div className="page-container" style={{ gap: '22px' }}>
-      {/* Friendly Greeting Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '1.5rem' }}>🌱</span>
-            <h1 style={{ fontSize: '2rem', color: '#fff' }}>Good Day, Farmer!</h1>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--emerald-400)', marginTop: '4px', fontSize: '1rem', fontWeight: 600 }}>
-            <MapPin size={18} />
-            <span>{activeField?.name || 'My Field'} ({activeField?.crop})</span>
-            <span style={{ color: 'var(--text-dim)', fontSize: '0.85rem' }}>&bull; {activeField?.area}</span>
-          </div>
-        </div>
-
-        <button onClick={() => setTab('field-monitor')} className="btn btn-secondary">
-          <span>View 3D Field Monitor</span>
-          <ArrowRight size={16} />
-        </button>
-      </div>
-
-      {/* Big Field Status Banner (PRD Section 11) */}
-      <div 
-        className="field-status-banner"
+    <div className="page-container" style={{ gap: '22px', maxWidth: '980px', margin: '0 auto', paddingBottom: '30px' }}>
+      
+      {/* ====================================================================
+          1. SIMPLE WELCOME HEADER
+          AgriTwin branding, selected farm, selected crop, simple greeting.
+          ==================================================================== */}
+      <header 
+        className="glass-card" 
         style={{
-          background: fieldStatusText === 'Needs Water' ? 'rgba(239, 68, 68, 0.16)' : fieldStatusText === 'Watch' ? 'rgba(245, 158, 11, 0.16)' : 'rgba(16, 185, 129, 0.16)',
-          border: `2px solid ${fieldStatusText === 'Needs Water' ? '#ef4444' : fieldStatusText === 'Watch' ? '#f59e0b' : '#10b981'}`,
-          borderRadius: 'var(--radius-xl)',
-          padding: '24px 28px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '16px'
+          padding: 'clamp(16px, 3vw, 22px)',
+          border: '1px solid var(--border-medium)',
+          borderRadius: 'var(--radius-xl)'
         }}
       >
-        <div>
-          <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.06em' }}>
-            YOUR FIELD STATUS
-          </span>
-          <div style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', fontWeight: 800, color: '#fff', margin: '4px 0' }}>
-            {fieldStatusBadge}
-          </div>
-          <p style={{ fontSize: 'clamp(0.9rem, 3.5vw, 1.05rem)', color: '#f1f5f9', fontWeight: 500 }}>
-            "{fieldStatusMessage}"
-          </p>
-        </div>
-
-        {fieldStatusText === 'Needs Water' && (
-          <button onClick={waterZone2} className="btn btn-water status-btn" style={{ padding: '12px 20px', fontSize: '0.96rem' }}>
-            <Droplets size={18} />
-            <span>{isIrrigatingZone2 ? 'Watering Active...' : 'Water Zone 2 Now'}</span>
-          </button>
-        )}
-      </div>
-
-      {/* 6 Large Primary Farmer Cards (PRD Section 10) — Exact 2-col on Mobile */}
-      <div className="home-metrics-grid">
-        {/* Card 1: Field Temperature */}
-        <div className="metric-card">
-          <div className="metric-card-top">
-            <span className="metric-card-label">Temperature</span>
-            <div className="metric-card-icon" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' }}>
-              <Thermometer size={18} />
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '14px'
+        }}>
+          {/* Brand & Farm Info */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '14px',
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.35))',
+              border: '1px solid rgba(16, 185, 129, 0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.65rem',
+              flexShrink: 0
+            }}>
+              🌱
             </div>
-          </div>
-          <div className="metric-card-value-row">
-            <span className="metric-card-value">{liveWeather.temperature}°</span>
-            <span className="metric-card-unit">C</span>
-          </div>
-          <div className="metric-card-footer">
-            <span style={{ color: '#34d399', fontWeight: 700, fontSize: '0.72rem' }}>🟢 LIVE</span>
-          </div>
-        </div>
-
-        {/* Card 2: Air Moisture */}
-        <div className="metric-card">
-          <div className="metric-card-top">
-            <span className="metric-card-label">Air Moisture</span>
-            <div className="metric-card-icon" style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8' }}>
-              <Wind size={18} />
-            </div>
-          </div>
-          <div className="metric-card-value-row">
-            <span className="metric-card-value">{liveWeather.humidity}</span>
-            <span className="metric-card-unit">%</span>
-          </div>
-          <div className="metric-card-footer">
-            <span style={{ color: '#34d399', fontWeight: 700, fontSize: '0.72rem' }}>🟢 LIVE</span>
-          </div>
-        </div>
-
-        {/* Card 3: Soil Water */}
-        <div className="metric-card">
-          <div className="metric-card-top">
-            <span className="metric-card-label">Soil Water</span>
-            <div className="metric-card-icon">
-              <Droplets size={18} />
-            </div>
-          </div>
-          <div className="metric-card-value-row">
-            <span className="metric-card-value" style={{ color: avgSoilWater < 25 ? '#f87171' : '#fff' }}>
-              {avgSoilWater}%
-            </span>
-          </div>
-          <div className="metric-card-footer">
-            <span style={{ color: '#fbbf24', fontWeight: 700, fontSize: '0.72rem' }}>🟡 SIMULATED</span>
-          </div>
-        </div>
-
-        {/* Card 4: Rain */}
-        <div className="metric-card">
-          <div className="metric-card-top">
-            <span className="metric-card-label">Rain</span>
-            <div className="metric-card-icon" style={{ background: 'rgba(2, 132, 199, 0.15)', color: '#0284c7' }}>
-              <CloudRain size={18} />
-            </div>
-          </div>
-          <div className="metric-card-value-row">
-            <span className="metric-card-value">{liveWeather.rainfall}</span>
-            <span className="metric-card-unit">mm</span>
-          </div>
-          <div className="metric-card-footer">
-            <span style={{ color: '#34d399', fontWeight: 700, fontSize: '0.72rem' }}>🟢 LIVE</span>
-          </div>
-        </div>
-
-        {/* Card 5: Crop Condition */}
-        <div className="metric-card">
-          <div className="metric-card-top">
-            <span className="metric-card-label">Crop Status</span>
-            <div className="metric-card-icon" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#10b981' }}>
-              <ShieldCheck size={18} />
-            </div>
-          </div>
-          <div className="metric-card-value-row">
-            <span className="metric-card-value" style={{ fontSize: 'clamp(1.2rem, 4.5vw, 1.75rem)', color: cropCondition.status === 'Good' ? 'var(--emerald-400)' : '#f87171' }}>
-              {cropCondition.status}
-            </span>
-          </div>
-          <div className="metric-card-footer">
-            <span style={{ color: 'var(--text-dim)', fontSize: '0.7rem' }}>Score {cropCondition.healthScore}%</span>
-          </div>
-        </div>
-
-        {/* Card 6: Water Need */}
-        <div className="metric-card" style={{ borderColor: String(waterNeed?.status ?? '').includes('Zone 2') ? 'rgba(239, 68, 68, 0.5)' : 'var(--border-subtle)' }}>
-          <div className="metric-card-top">
-            <span className="metric-card-label">Water Need</span>
-            <div className="metric-card-icon" style={{ background: String(waterNeed?.status ?? '').includes('Zone 2') ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.12)', color: String(waterNeed?.status ?? '').includes('Zone 2') ? '#f87171' : 'var(--emerald-400)' }}>
-              <Droplets size={18} />
-            </div>
-          </div>
-          <div className="metric-card-value-row">
-            <span className="metric-card-value" style={{ fontSize: 'clamp(1.05rem, 4.2vw, 1.45rem)', color: String(waterNeed?.status ?? '').includes('Zone 2') ? '#fca5a5' : '#34d399' }}>
-              {waterNeed?.status || 'Adequate'}
-            </span>
-          </div>
-          <div className="metric-card-footer">
-            <span style={{ color: '#fbbf24', fontWeight: 700, fontSize: '0.72rem' }}>AI IRRIGATION</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ADVANCED FIELD SENTINEL ROW — Plant Grid, Animal Intrusion & Camera System */}
-      <div className="sentinel-grid-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '16px' }}>
-        {/* Plant Health & Pest Sentinel */}
-        <div
-          onClick={() => setTab('plant-health')}
-          className="glass-card"
-          style={{
-            padding: '18px 20px',
-            cursor: 'pointer',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 20, 14, 0.6) 100%)',
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <div style={{ background: 'rgba(16, 185, 129, 0.2)', padding: '8px', borderRadius: '50%' }}>
-              <Leaf size={20} color="var(--emerald-400)" />
-            </div>
-            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--emerald-400)', background: 'rgba(16,185,129,0.15)', padding: '2px 8px', borderRadius: '10px' }}>
-              6×6 MATRIX
-            </span>
-          </div>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>
-            Plant-Level Health & Pest Grid
-          </h3>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '12px', lineHeight: 1.4 }}>
-            Track plant-by-plant condition, detect chewing holes, and isolate spatial pest clusters.
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--emerald-400)', fontSize: '0.8rem', fontWeight: 700 }}>
-            <span>Open Plant Grid</span>
-            <ArrowRight size={14} />
-          </div>
-        </div>
-
-        {/* Animal Intrusion Sentinel */}
-        <div
-          onClick={() => setTab('animal-alerts')}
-          className="glass-card"
-          style={{
-            padding: '18px 20px',
-            cursor: 'pointer',
-            border: '1px solid rgba(239, 68, 68, 0.4)',
-            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(20, 5, 8, 0.6) 100%)',
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <div style={{ background: 'rgba(239, 68, 68, 0.2)', padding: '8px', borderRadius: '50%' }}>
-              <ShieldAlert size={20} color="#ef4444" />
-            </div>
-            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#f87171', background: 'rgba(239, 68, 68, 0.2)', padding: '2px 8px', borderRadius: '10px' }}>
-              🚨 1 ACTIVE ALERT
-            </span>
-          </div>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>
-            Animal Intrusion Sentinel
-          </h3>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '12px', lineHeight: 1.4 }}>
-            Cattle and wild boar boundary breaches flagged with acoustic deterrent controls.
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fca5a5', fontSize: '0.8rem', fontWeight: 700 }}>
-            <span>Check Animal Alert</span>
-            <ArrowRight size={14} />
-          </div>
-        </div>
-
-        {/* Optical Camera Sentinel */}
-        <div
-          onClick={() => setTab('field-camera')}
-          className="glass-card"
-          style={{
-            padding: '18px 20px',
-            cursor: 'pointer',
-            border: '1px solid rgba(56, 189, 248, 0.3)',
-            background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(5, 14, 20, 0.6) 100%)',
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <div style={{ background: 'rgba(56, 189, 248, 0.2)', padding: '8px', borderRadius: '50%' }}>
-              <Camera size={20} color="#38bdf8" />
-            </div>
-            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#7dd3fc', background: 'rgba(56, 189, 248, 0.15)', padding: '2px 8px', borderRadius: '10px' }}>
-              IR OPTICAL
-            </span>
-          </div>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>
-            Field Optical Camera System
-          </h3>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '12px', lineHeight: 1.4 }}>
-            Connect RTSP solar feeds, capture high-res snapshots, and execute edge AI diagnostics.
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#38bdf8', fontSize: '0.8rem', fontWeight: 700 }}>
-            <span>Open Camera Stream</span>
-            <ArrowRight size={14} />
-          </div>
-        </div>
-      </div>
-
-      {/* 4-Zone Water Summary & Today's Weather Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '20px' }}>
-        {/* 4-Zone Water Grid (PRD Section 14 & 38) */}
-        <div className="glass-card">
-          <div className="glass-card-header">
-            <div className="glass-card-title">
-              <Droplets size={18} color="var(--emerald-400)" />
-              <span>Field Zones Soil Water</span>
-            </div>
-            <button onClick={() => setTab('water')} className="btn btn-secondary btn-sm">
-              View Water Details <ArrowRight size={14} />
-            </button>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {zones.map(z => {
-              const isLow = z.soilWater < 25;
-              const isWatch = z.soilWater >= 25 && z.soilWater < 40;
-
-              return (
-                <div key={z.id} style={{ background: 'rgba(0,0,0,0.25)', padding: '14px', borderRadius: 'var(--radius-md)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <strong style={{ color: '#fff', fontSize: '0.95rem' }}>{z.name}</strong>
-                    <span style={{
-                      fontWeight: 700,
-                      fontSize: '0.8rem',
-                      color: isLow ? '#f87171' : isWatch ? '#fbbf24' : '#34d399'
-                    }}>
-                      {isLow ? '🔴 Needs Water' : isWatch ? '🟡 Watch' : '🟢 Good'}
-                    </span>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ flex: 1, background: 'rgba(255,255,255,0.08)', height: '8px', borderRadius: '9999px', overflow: 'hidden' }}>
-                      <div style={{
-                        width: `${Math.min(100, (z.soilWater / 60) * 100)}%`,
-                        height: '100%',
-                        background: isLow ? '#ef4444' : isWatch ? '#f59e0b' : '#10b981',
-                        borderRadius: '9999px',
-                        transition: 'width 0.4s ease'
-                      }} />
-                    </div>
-                    <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fff', minWidth: '45px', textAlign: 'right' }}>
-                      {z.soilWater?.toFixed(1)}%
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Today's Weather Snapshot (PRD Section 17 & 38) */}
-        <div className="glass-card">
-          <div className="glass-card-header">
-            <div className="glass-card-title">
-              <Sun size={18} color="#f59e0b" />
-              <span>Today's Live Weather for Field</span>
-            </div>
-            <button onClick={() => setTab('weather')} className="btn btn-secondary btn-sm">
-              5-Day Forecast <ArrowRight size={14} />
-            </button>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '18px', padding: '12px 0 20px' }}>
-            <span style={{ fontSize: '3.2rem' }}>{liveWeather.conditionIcon}</span>
             <div>
-              <div style={{ fontSize: '2.4rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
-                {liveWeather.temperature}°C
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                {t('home.farmerGreeting') || 'Hello, Farmer'}
               </div>
-              <div style={{ fontSize: '1rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                {liveWeather.condition} &bull; Wind {liveWeather.windSpeed} km/h
+              <h1 style={{ fontSize: 'clamp(1.3rem, 4.2vw, 1.65rem)', fontWeight: 800, color: '#fff', margin: '2px 0 0', lineHeight: 1.2 }}>
+                {fieldName}
+              </h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: 'var(--text-dim)', marginTop: '4px' }}>
+                <span>{cropIcon} {cropName}</span>
+                <span>&bull;</span>
+                <span>{areaText}</span>
               </div>
             </div>
           </div>
 
-          {/* Simple Alert Banner */}
-          <div style={{
-            background: (simpleRecommendation?.title ?? '').includes('WATER NEEDED') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.12)',
-            border: `1px solid ${(simpleRecommendation?.title ?? '').includes('WATER NEEDED') ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.3)'}`,
-            borderRadius: 'var(--radius-md)',
-            padding: '16px',
-            marginTop: 'auto'
-          }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: (simpleRecommendation?.title ?? '').includes('WATER NEEDED') ? '#f87171' : 'var(--emerald-400)', marginBottom: '4px' }}>
-              {simpleRecommendation?.title || 'FIELD STATUS'}
+          {/* Simple Change Field Action */}
+          <button 
+            onClick={() => setTab('my-fields')}
+            className="btn btn-secondary btn-sm"
+            style={{ 
+              padding: '10px 18px', 
+              fontWeight: 700, 
+              minHeight: '42px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '8px',
+              borderRadius: 'var(--radius-md)'
+            }}
+          >
+            <span>{t('common.changeField') || 'Change Field'}</span>
+            <ArrowRight size={15} />
+          </button>
+        </div>
+      </header>
+
+      {/* ====================================================================
+          2. ONE MAIN WATER ADVICE CARD (MOST PROMINENT SECTION)
+          Answers:
+          - Does my crop need water?
+          - Which zone needs attention?
+          - Why is watering recommended?
+          - What action should the farmer take?
+          ==================================================================== */}
+      <section aria-labelledby="section-main-water-advice">
+        <div style={{
+          background: adviceTheme.bg,
+          border: `2px solid ${adviceTheme.border}`,
+          borderRadius: 'var(--radius-xl)',
+          padding: 'clamp(20px, 4.5vw, 28px)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '18px',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.35)'
+        }}>
+          {/* Top Status Strip */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '6px 14px',
+              borderRadius: '999px',
+              background: adviceTheme.pillBg,
+              border: `1.5px solid ${adviceTheme.pillBorder}`,
+              fontSize: '0.86rem',
+              fontWeight: 800,
+              color: adviceTheme.color
+            }}>
+              <span>{isDataUnavailable ? '⚠️' : isWaterLow ? '🚨' : '✅'}</span>
+              <span>{adviceTheme.badge}</span>
             </div>
-            <p style={{ color: '#fff', fontSize: '0.92rem', fontWeight: 600 }}>
-              {simpleRecommendation.text}
+
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)', fontWeight: 600 }}>
+              {t('home.assistantBrand') || 'AgriTwin Smart Farming Assistant'}
+            </span>
+          </div>
+
+          {/* Core Decision: Headline */}
+          <div>
+            <div style={{ fontSize: '0.84rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700, letterSpacing: '0.05em' }}>
+              {t('home.waterAdviceQuestion') || 'Does my crop need water?'}
+            </div>
+            <h2 id="section-main-water-advice" style={{ 
+              fontSize: 'clamp(1.45rem, 5vw, 2.0rem)', 
+              fontWeight: 900, 
+              color: '#fff', 
+              margin: '6px 0 0',
+              lineHeight: 1.2
+            }}>
+              {isDataUnavailable
+                ? (t('home.waterUnavailableTitle') || 'Watering Recommendation Unavailable')
+                : isWaterLow
+                ? (t('home.waterNeededTitle') || 'Water May Be Needed')
+                : (t('home.waterNotNeededTitle') || 'No Watering Needed Right Now')}
+            </h2>
+          </div>
+
+          {/* Plain-Language Explanation & Affected Zone */}
+          {isDataUnavailable ? (
+            <p style={{ fontSize: '0.96rem', color: '#fde68a', margin: 0, lineHeight: 1.5 }}>
+              {t('home.waterUnavailableDesc') || 'Soil moisture or field data is missing. A reliable watering recommendation cannot be calculated safely.'}
             </p>
-            <p style={{ color: 'var(--text-dim)', fontSize: '0.78rem', marginTop: '2px' }}>
-              {simpleRecommendation.reason}
+          ) : isWaterLow ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <p style={{ fontSize: '0.98rem', color: '#f1f5f9', margin: 0, lineHeight: 1.5 }}>
+                {t('home.waterNeededShortDesc', { zone: targetZoneName }) || `Soil moisture in ${targetZoneName} is below the watering level. Watering is recommended today to protect crop health.`}
+              </p>
+              <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: '6px', fontSize: '0.9rem', color: '#fca5a5', fontWeight: 800, wordBreak: 'break-word' }}>
+                <span>📍</span>
+                <span>{t('home.affectedPlot') || 'Affected Field Zone'}: {targetZoneName} ({targetAreaText})</span>
+              </div>
+            </div>
+          ) : (
+            <p style={{ fontSize: '0.98rem', color: '#f1f5f9', margin: 0, lineHeight: 1.5 }}>
+              {t('home.waterNotNeededDesc') || 'Soil moisture across your field is adequate. Your crops have sufficient water in the root zone.'}
             </p>
+          )}
+
+          {/* Tomorrow Rain Advisory (If rain is forecast tomorrow) */}
+          {isWaterLow && scientificRecommendation?.weatherAdvisory && (
+            <div style={{
+              background: 'rgba(56, 189, 248, 0.12)',
+              border: '1px solid rgba(56, 189, 248, 0.35)',
+              padding: '12px 16px',
+              borderRadius: 'var(--radius-md)',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '10px',
+              fontSize: '0.86rem',
+              color: '#bae6fd',
+              lineHeight: 1.45
+            }}>
+              <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>🌦️</span>
+              <div>
+                <strong>{t('home.rainForecastTitle') || 'Rain Forecast'}:</strong>{' '}
+                {t('home.rainAlertNote', { 
+                  rain: scientificRecommendation.weatherAdvisory.forecastRainTomorrow, 
+                  prob: scientificRecommendation.weatherAdvisory.precipitationProbability 
+                }) || `Rain (~${scientificRecommendation.weatherAdvisory.forecastRainTomorrow} mm, ${scientificRecommendation.weatherAdvisory.precipitationProbability}%) is forecast tomorrow. If rain appears certain, you can postpone watering to save water.`}
+              </div>
+            </div>
+          )}
+
+          {/* Action Box: What action should the farmer take? */}
+          <div style={{
+            background: 'rgba(0,0,0,0.3)',
+            padding: '16px 18px',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px'
+          }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>
+              👉 {t('home.whatToDoNext') || 'What should I do next?'}
+            </div>
+            <div style={{ fontSize: '1.02rem', fontWeight: 700, color: adviceTheme.color, lineHeight: 1.4 }}>
+              {isDataUnavailable
+                ? (t('home.actionWaterUnavailable') || 'Check your field setup or sensor connection to see recommendations.')
+                : isWaterLow
+                ? (t('home.actionWaterNeeded', { zone: targetZoneName }) || `Turn on irrigation for ${targetZoneName} today to restore healthy soil moisture.`)
+                : (t('home.actionWaterNotNeeded') || 'Keep irrigation motor OFF today. Check back tomorrow morning.')}
+            </div>
+          </div>
+
+          {/* Bottom Action Controls */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            flexWrap: 'wrap', 
+            gap: '12px',
+            paddingTop: '6px',
+            borderTop: '1px solid rgba(255,255,255,0.06)'
+          }}>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
+              🟡 {t('home.dataHonestySimulated') || 'Soil moisture is simulated for demonstration. Live weather is from Open-Meteo.'}
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+              {/* Optional Demo Watering Simulator Button */}
+              {isWaterLow && (
+                <button
+                  type="button"
+                  onClick={waterZone2}
+                  className="btn btn-water btn-sm"
+                  style={{ minHeight: '42px', fontWeight: 700, padding: '8px 16px' }}
+                  title="Simulate virtual watering for Zone 2"
+                >
+                  <Droplets size={16} />
+                  <span>{isIrrigatingZone2 ? (t('home.wateringActive') || 'Watering Active...') : (t('home.simulateWatering') || 'Simulate Watering')}</span>
+                </button>
+              )}
+
+              {/* Link to Water Page */}
+              <button
+                type="button"
+                onClick={() => setTab('water')}
+                className="btn btn-secondary btn-sm"
+                style={{ minHeight: '42px', fontWeight: 700, padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                <span>{t('home.viewWaterDetails') || 'View Water Details'}</span>
+                <ArrowRight size={15} />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* ====================================================================
+          3. TWO SIMPLE INFORMATION CARDS
+          Card 1: Today's Weather (temperature & simple description)
+          Card 2: Rain Forecast (expected rainfall & rain chance)
+          ==================================================================== */}
+      <section aria-labelledby="section-simple-weather-info">
+        <h3 id="section-simple-weather-info" className="sr-only">
+          Weather and Rain Information
+        </h3>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+          gap: '16px'
+        }}>
+          {/* Card 1: Today's Weather */}
+          <div 
+            className="glass-card" 
+            style={{ 
+              padding: 'clamp(18px, 3.5vw, 24px)', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              justifyContent: 'space-between',
+              gap: '14px'
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Sun size={20} color="#fbbf24" />
+                  <span style={{ fontSize: '0.98rem', fontWeight: 800, color: '#fff' }}>
+                    {t('home.todayWeatherTitle') || "Today's Weather"}
+                  </span>
+                </div>
+                <span style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  color: isLive ? '#34d399' : isCached ? '#38bdf8' : '#fbbf24',
+                  background: isLive ? 'rgba(16, 185, 129, 0.15)' : isCached ? 'rgba(56, 189, 248, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                  border: `1px solid ${isLive ? 'rgba(16, 185, 129, 0.3)' : isCached ? 'rgba(56, 189, 248, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`,
+                  padding: '2px 8px',
+                  borderRadius: '6px'
+                }}>
+                  {weatherBadgeText}
+                </span>
+              </div>
+
+              <div style={{ margin: '10px 0 6px' }}>
+                <div style={{ fontSize: 'clamp(2.2rem, 5.5vw, 2.8rem)', fontWeight: 900, color: hasWeatherTemp ? '#fff' : '#fbbf24', lineHeight: 1 }}>
+                  {tempDisplay}
+                </div>
+                <div style={{ fontSize: '0.95rem', color: '#f1f5f9', fontWeight: 600, marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>{conditionIcon}</span>
+                  <span>{conditionDisplay}</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setTab('weather')}
+              className="btn btn-secondary btn-sm"
+              style={{ width: '100%', justifyContent: 'center', minHeight: '40px', fontWeight: 700, fontSize: '0.86rem' }}
+            >
+              <span>{t('home.viewWeatherDetails') || 'Full Weather Forecast →'}</span>
+            </button>
+          </div>
+
+          {/* Card 2: Rain Forecast */}
+          <div 
+            className="glass-card" 
+            style={{ 
+              padding: 'clamp(18px, 3.5vw, 24px)', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              justifyContent: 'space-between',
+              gap: '14px'
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <CloudRain size={20} color="#38bdf8" />
+                  <span style={{ fontSize: '0.98rem', fontWeight: 800, color: '#fff' }}>
+                    {t('home.rainForecastTitle') || 'Rain Forecast'}
+                  </span>
+                </div>
+                <span style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  color: hasTomorrowRain ? '#38bdf8' : 'var(--text-muted)',
+                  background: hasTomorrowRain ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                  border: `1px solid ${hasTomorrowRain ? 'rgba(56, 189, 248, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`,
+                  padding: '2px 8px',
+                  borderRadius: '6px'
+                }}>
+                  {hasTomorrowRain ? ('🌧️ ' + (t('weather.rainAlert') || 'Rain Alert')) : ('☀️ ' + (t('weather.drySkies') || 'Dry Skies'))}
+                </span>
+              </div>
+
+              <div style={{ margin: '10px 0 6px' }}>
+                <div style={{ fontSize: 'clamp(2.2rem, 5.5vw, 2.8rem)', fontWeight: 900, color: hasTomorrowRain ? '#38bdf8' : '#fff', lineHeight: 1 }}>
+                  {hasTomorrowRain ? `${tomorrowRain} mm` : `${todayRain > 0 ? todayRain : 0} mm`}
+                </div>
+                <div style={{ fontSize: '0.92rem', color: '#f1f5f9', fontWeight: 600, marginTop: '8px' }}>
+                  {hasTomorrowRain
+                    ? (t('home.rainExpectedTomorrow', { rain: tomorrowRain, prob: tomorrowProb }) || `${tomorrowRain} mm rain expected tomorrow (${tomorrowProb}% chance)`)
+                    : todayRain > 0
+                    ? (t('home.rainExpectedToday', { rain: todayRain }) || `${todayRain} mm rain received today`)
+                    : (t('home.noRainExpected') || 'No rain expected (0 mm)')}
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginTop: '4px' }}>
+                  {hasTomorrowRain
+                    ? (t('home.rainMaySaveWater') || 'Incoming rain may reduce your watering need tomorrow.')
+                    : (t('home.dryConditions') || 'Dry skies expected today.')}
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setTab('weather')}
+              className="btn btn-secondary btn-sm"
+              style={{ width: '100%', justifyContent: 'center', minHeight: '40px', fontWeight: 700, fontSize: '0.86rem' }}
+            >
+              <span>{t('home.viewRainDetails') || 'Rain & Weather Details →'}</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ====================================================================
+          4. OPTIONAL FIELD INFORMATION
+          Crop & Field size in a small, simple section.
+          ==================================================================== */}
+      <footer 
+        className="glass-card" 
+        style={{
+          padding: '16px 20px',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 'var(--radius-lg)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '14px'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: '1.2rem' }}>🌾</span>
+          <span>
+            <strong>{t('home.fieldSummaryTitle') || 'Field Summary'}:</strong> {cropName} ({cropIcon}) &bull; {areaText}
+          </span>
+        </div>
+
+        {/* Quick Shortcuts */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => setTab('water')}
+            className="btn btn-secondary btn-sm"
+            style={{ fontSize: '0.82rem', padding: '8px 14px', minHeight: '40px' }}
+          >
+            💧 {t('home.waterOutlookBtn') || 'Water Outlook'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('weather')}
+            className="btn btn-secondary btn-sm"
+            style={{ fontSize: '0.82rem', padding: '8px 14px', minHeight: '40px' }}
+          >
+            🌤️ {t('home.weatherDetailsBtn') || 'Weather'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('field-monitor')}
+            className="btn btn-secondary btn-sm"
+            style={{ fontSize: '0.82rem', padding: '8px 14px', minHeight: '40px' }}
+          >
+            📊 {t('home.fieldMonitorBtn') || 'Field Monitor'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('reports')}
+            className="btn btn-secondary btn-sm"
+            style={{ fontSize: '0.82rem', padding: '8px 14px', minHeight: '40px' }}
+          >
+            📋 {t('home.reportsBtn') || 'Reports'}
+          </button>
+        </div>
+      </footer>
+
     </div>
   );
 }

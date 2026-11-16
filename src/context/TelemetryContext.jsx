@@ -3,13 +3,24 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { useFields } from './FieldsContext';
+import { useLanguage } from './LanguageContext';
 import { fetchLiveWeather } from '../services/weatherService';
 import { firebaseBridge } from '../services/firebase';
+import { 
+  evaluateFieldIrrigation, 
+  getSoilProfile, 
+  getCropProfile,
+  getBaselineZonesForSoil
+} from '../services/recommendationEngine';
 
 const TelemetryContext = createContext(null);
 
 export function TelemetryProvider({ children }) {
   const { activeField, updateActiveFieldZone } = useFields();
+  const { t } = useLanguage();
+
+  const activeSoil = getSoilProfile(activeField?.soilType || 'sandy_loam');
+  const activeCrop = getCropProfile(activeField?.crop || 'Tomato');
 
   // 1. Live Weather State (Open-Meteo Real Data)
   const [liveWeather, setLiveWeather] = useState({
@@ -27,7 +38,16 @@ export function TelemetryProvider({ children }) {
   const [weatherLoading, setWeatherLoading] = useState(false);
 
   // 2. Simulated Soil Sensors State for Active Field's 4 Zones
-  const [zones, setZones] = useState(() => activeField?.zones || []);
+  const [zones, setZones] = useState(() => {
+    const soil = getSoilProfile(activeField?.soilType || 'sandy_loam');
+    if (activeField?.zones && activeField.zones.length > 0) {
+      const isOutOfBounds = activeField.zones.some(z => (z.soilWater || 0) > soil.fc || (z.soilWater || 0) < soil.pwp);
+      if (!isOutOfBounds) {
+        return activeField.zones;
+      }
+    }
+    return getBaselineZonesForSoil(soil.id);
+  });
   const [isDecliningZone2, setIsDecliningZone2] = useState(false);
   const [isIrrigatingZone2, setIsIrrigatingZone2] = useState(false);
   const [simulationSpeed, setSimulationSpeed] = useState('normal'); // 'slow' (6s), 'normal' (3s), 'fast' (1s)
@@ -37,10 +57,10 @@ export function TelemetryProvider({ children }) {
   // History buffer for graphs (Today / 7 Days / 30 Days)
   const [historyBuffer, setHistoryBuffer] = useState({
     times: ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00'],
-    zone1: [42, 42, 41.5, 41.2, 41, 41.2, 41.2],
-    zone2: [38, 35, 32, 29, 26, 25, 24.2],
-    zone3: [40, 39.5, 39, 38.5, 38, 38, 38],
-    zone4: [45, 44.5, 44, 43.8, 43.5, 43.5, 43.5],
+    zone1: [18.0, 17.9, 17.8, 17.7, 17.8, 17.8, 17.8],
+    zone2: [17.5, 16.8, 15.6, 14.8, 14.1, 13.8, 13.5],
+    zone3: [16.8, 16.6, 16.4, 16.3, 16.2, 16.2, 16.2],
+    zone4: [18.0, 18.0, 18.0, 17.9, 18.0, 18.0, 18.0],
     temperatures: [24, 26, 28, 30, 31, 29, 27],
     rainfall: [0, 0, 0, 0, 0, 2.0, 0]
   });
@@ -51,10 +71,17 @@ export function TelemetryProvider({ children }) {
 
   // Sync zones whenever activeField changes
   useEffect(() => {
-    if (activeField?.zones) {
-      setZones(activeField.zones);
+    if (activeField) {
+      const soil = getSoilProfile(activeField.soilType || 'sandy_loam');
+      const isOutOfBounds = !activeField.zones || activeField.zones.length === 0 ||
+        activeField.zones.some(z => (z.soilWater || 0) > soil.fc || (z.soilWater || 0) < soil.pwp);
+      if (isOutOfBounds) {
+        setZones(getBaselineZonesForSoil(soil.id));
+      } else {
+        setZones(activeField.zones);
+      }
     }
-  }, [activeField?.id]);
+  }, [activeField?.id, activeField?.soilType]);
 
   // Fetch real live weather whenever activeField coordinates change
   useEffect(() => {
@@ -77,9 +104,14 @@ export function TelemetryProvider({ children }) {
     };
   }, [activeField?.latitude, activeField?.longitude]);
 
-  // Simulation Heartbeat Timer
+  // Simulation Heartbeat Timer (Aligned with active soil profile & crop)
   useEffect(() => {
     if (!isEngineRunning) return;
+
+    const fc = activeSoil.fc;
+    const p = activeCrop.depletionFraction || 0.40;
+    const refillThreshold = parseFloat((fc - p * (fc - activeSoil.pwp)).toFixed(1)); // e.g. 14.0%
+    const criticalFloor = parseFloat((activeSoil.pwp + 2.0).toFixed(1)); // e.g. 10.0%
 
     const ms = simulationSpeed === 'fast' ? 1000 : simulationSpeed === 'slow' ? 6000 : 3000;
     const interval = setInterval(() => {
@@ -89,38 +121,49 @@ export function TelemetryProvider({ children }) {
 
           if (z.id === 'zone2') {
             if (isDecliningZone2) {
-              if (updatedWater > 24.2) {
-                updatedWater = parseFloat((updatedWater - 0.4).toFixed(1));
+              // Gradual drying down to critical demo floor (e.g. 11.5% VWC for Sandy Loam)
+              const demoFloor = Math.max(criticalFloor + 1.0, refillThreshold - 2.5);
+              if (updatedWater > demoFloor) {
+                updatedWater = parseFloat((updatedWater - 0.25).toFixed(1));
               }
             } else if (isIrrigatingZone2) {
-              if (updatedWater < 38.0) {
-                updatedWater = parseFloat((updatedWater + 1.2).toFixed(1));
+              // Virtual Irrigation: moisture rises up to Field Capacity (e.g. 17.8% VWC)
+              if (updatedWater < (fc - 0.2)) {
+                updatedWater = parseFloat((updatedWater + 0.5).toFixed(1));
               } else {
+                updatedWater = parseFloat((fc - 0.2).toFixed(1));
                 setIsIrrigatingZone2(false); // Finished watering
               }
             } else {
-              // Gentle micro variation
-              updatedWater = parseFloat((updatedWater + (Math.random() - 0.5) * 0.08).toFixed(1));
+              // Gentle natural micro-drift
+              updatedWater = parseFloat((updatedWater + (Math.random() - 0.5) * 0.06).toFixed(1));
             }
           } else {
-            updatedWater = parseFloat((updatedWater + (Math.random() - 0.5) * 0.06).toFixed(1));
+            // Other zones hover smoothly in optimal / RAW range
+            updatedWater = parseFloat((updatedWater + (Math.random() - 0.5) * 0.05).toFixed(1));
           }
 
-          // Determine simple farmer-friendly status (Good, Watch, Needs Water)
+          // Strict Physical Boundary Enforcement:
+          // In steady state without rain, moisture cannot exceed Field Capacity or fall below PWP
+          const maxAllowed = (activeScenario === 'rain' || (liveWeather?.rainfall || 0) > 0) ? activeSoil.sat : fc;
+          updatedWater = Math.min(maxAllowed, Math.max(activeSoil.pwp, updatedWater));
+          updatedWater = parseFloat(updatedWater.toFixed(1));
+
+          // Determine farmer-friendly status strictly against scientific thresholds
           let status = 'Good';
-          if (updatedWater < 25.0) {
+          if (updatedWater <= refillThreshold) {
             status = 'Needs Water';
-          } else if (updatedWater < 40.0) {
+          } else if (updatedWater < fc) {
             status = 'Watch';
           }
 
-          // Log to simulated raw sensor feed
+          // Log to simulated telemetry bridge with explicit simulation tag
           firebaseBridge.addSensorReading({
             sensorId: z.sensorId || 'SM-Z02',
             zoneId: z.name,
             parameter: 'Soil Water',
             value: updatedWater,
-            unit: '%',
+            unit: '% VWC (Simulated)',
             status: 'OK'
           });
 
@@ -134,64 +177,70 @@ export function TelemetryProvider({ children }) {
     }, ms);
 
     return () => clearInterval(interval);
-  }, [isEngineRunning, simulationSpeed, isDecliningZone2, isIrrigatingZone2]);
+  }, [isEngineRunning, simulationSpeed, isDecliningZone2, isIrrigatingZone2, activeSoil.id, activeCrop.crop]);
 
-  // Derived Aggregate Values for Home Dashboard
+  // Derived Aggregate Values for Home Dashboard & Reports (Deliberate half-up rounding: 16.45% -> 16.5%)
   const avgSoilWater = zones.length > 0
-    ? (zones.reduce((sum, z) => sum + (z.soilWater || 0), 0) / zones.length).toFixed(0)
-    : '34';
+    ? (Math.round(((zones.reduce((sum, z) => sum + (z.soilWater || 0), 0) / zones.length) + Number.EPSILON) * 10) / 10).toFixed(1)
+    : '16.5';
 
   const z2 = zones.find(z => z.id === 'zone2') || zones[1] || zones[0];
-  const z2Water = z2?.soilWater ?? 24.2;
+  const z2Water = z2?.soilWater ?? 13.8;
 
-  // Simple Overall Field Status (PRD Section 11)
-  let fieldStatusText = 'Good';
-  let fieldStatusMessage = 'Your crop currently looks okay.';
-  let fieldStatusBadge = '🟢 Good';
+  // Single Central Scientific Recommendation Engine (Requirement D: No conflicting advice)
+  const scientificRecommendation = evaluateFieldIrrigation({
+    field: activeField,
+    zones,
+    weather: liveWeather
+  });
 
-  if (liveWeather.rainfall > 5.0) {
-    fieldStatusText = 'Rain Occurring';
-    fieldStatusMessage = 'Rain may reduce the need for watering today.';
-    fieldStatusBadge = '🔵 Rain';
-  } else if (z2Water < 25.0) {
-    fieldStatusText = 'Needs Water';
-    fieldStatusMessage = 'Soil water in Zone 2 is low. Watering recommended.';
-    fieldStatusBadge = '🔴 Needs Water';
-  } else if (z2Water < 40.0) {
-    fieldStatusText = 'Watch';
-    fieldStatusMessage = 'Soil water is getting low in some parts.';
-    fieldStatusBadge = '🟡 Watch';
+  // Simple Farmer Recommendation (mapped directly from scientific recommendation)
+  const simpleRecommendation = {
+    title: scientificRecommendation.title,
+    text: scientificRecommendation.text,
+    reason: scientificRecommendation.reason,
+    action: scientificRecommendation.action,
+    status: scientificRecommendation.status,
+    priority: scientificRecommendation.priority,
+    adviceStatus: scientificRecommendation.adviceStatus,
+    adviceReason: scientificRecommendation.adviceReason,
+    nextStep: scientificRecommendation.nextStep
+  };
+
+  // Field Status Badges & Text (Synchronized with scientific recommendation)
+  let fieldStatusText = t('telemetry.statusGoodText');
+  let fieldStatusMessage = t('telemetry.statusGoodMsg');
+  let fieldStatusBadge = `🟢 ${t('telemetry.statusGoodText')}`;
+
+  if (!liveWeather?.isOffline && typeof liveWeather?.rainfall === 'number' && liveWeather.rainfall > 5.0) {
+    fieldStatusText = t('telemetry.statusRainText');
+    fieldStatusMessage = t('telemetry.statusRainMsg');
+    fieldStatusBadge = `🔵 ${t('telemetry.statusRainText')}`;
+  } else if (scientificRecommendation.status === 'NEEDS_WATER') {
+    fieldStatusText = t('telemetry.statusNeedsWaterText');
+    fieldStatusMessage = scientificRecommendation.adviceReason;
+    fieldStatusBadge = `🔴 ${t('telemetry.statusNeedsWaterText')}`;
+  } else if (scientificRecommendation.status === 'WATCH') {
+    fieldStatusText = t('telemetry.statusWatchText');
+    fieldStatusMessage = scientificRecommendation.adviceReason;
+    fieldStatusBadge = `🟡 ${t('telemetry.statusWatchText')}`;
   }
 
-  // Water Need Assessment (PRD Section 10 Card 5)
-  const waterNeed = z2Water < 25 ? 'High' : z2Water < 40 ? 'Medium' : 'Low';
+  // Water Need Assessment (Synchronized with scientific depletion)
+  const waterNeed = scientificRecommendation.status === 'NEEDS_WATER' 
+    ? t('telemetry.waterNeedHigh') 
+    : scientificRecommendation.status === 'WATCH' 
+    ? t('telemetry.waterNeedMedium') 
+    : t('telemetry.waterNeedLow');
 
-  // Crop Condition Assessment (PRD Section 10 Card 6)
-  const cropCondition = z2Water < 25 ? 'Needs Attention' : z2Water < 35 ? 'Moderate' : 'Good';
+  // Crop Condition Assessment
+  const cropCondition = scientificRecommendation.status === 'NEEDS_WATER'
+    ? t('telemetry.cropConditionAttention')
+    : scientificRecommendation.status === 'WATCH'
+    ? t('telemetry.cropConditionModerate')
+    : t('telemetry.cropConditionGood');
 
-  // Simple Farmer Recommendation (PRD Section 15)
-  const simpleRecommendation = z2Water < 25
-    ? {
-        title: '💧 WATER NEEDED',
-        text: 'Zone 2 may need water soon.',
-        reason: 'Soil water is going down and little rain is expected in the forecast.',
-        action: 'Water Zone 2'
-      }
-    : z2Water < 40
-    ? {
-        title: '🟡 WATCH WATER',
-        text: 'Soil water is moderate in Zone 2.',
-        reason: 'Keep an eye on the weather forecast before next irrigation.',
-        action: 'Check Weather'
-      }
-    : {
-        title: '🟢 FIELD HYDRATED',
-        text: 'No watering needed today.',
-        reason: 'All zones have enough soil water for healthy crop growth.',
-        action: 'All Good'
-      };
-
-  // Farmer-Friendly Virtual Irrigation Action (PRD Section 21)
+  // Farmer-Friendly Virtual Irrigation Action
   const waterZone2 = () => {
     setIsDecliningZone2(false);
     setIsIrrigatingZone2(true);
@@ -208,11 +257,7 @@ export function TelemetryProvider({ children }) {
     setIsIrrigatingZone2(false);
     setActiveScenario('normal');
     setCurrentEventIndex(0);
-    setZones(prev => prev.map((z, idx) => ({
-      ...z,
-      soilWater: idx === 1 ? 41.5 : idx === 0 ? 41.2 : idx === 2 ? 38.0 : 43.5,
-      status: 'Good'
-    })));
+    setZones(getBaselineZonesForSoil(activeSoil.id));
   };
 
   return (
@@ -228,6 +273,9 @@ export function TelemetryProvider({ children }) {
       waterNeed,
       cropCondition,
       simpleRecommendation,
+      scientificRecommendation,
+      activeSoil,
+      activeCrop,
       waterZone2,
       isIrrigatingZone2,
       // Demo Controls

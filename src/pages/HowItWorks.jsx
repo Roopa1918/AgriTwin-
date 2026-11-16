@@ -1,5 +1,6 @@
 // AgriTwin — Educational Architecture & System Workflow (PRD Section 36 & 43)
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 import DisclaimerAlert from '../components/common/DisclaimerAlert';
 import { 
   Workflow, 
@@ -16,15 +17,15 @@ import {
 } from 'lucide-react';
 
 export default function HowItWorks() {
+  const { t } = useLanguage();
   return (
     <div className="page-container">
       {/* Header */}
       <div className="page-header">
         <div className="page-header-text">
-          <h1>Digital Twin Architecture & Cyber-Physical Pipeline</h1>
+          <h1>{t('help.title')}</h1>
           <p>
-            Educational reference explaining how the complete agricultural Digital Twin workflow 
-            bridges physical field phenomena, IoT sensor ingestion, cloud synchronization, and automated decision support.
+            {t('help.subtitle')}
           </p>
         </div>
       </div>

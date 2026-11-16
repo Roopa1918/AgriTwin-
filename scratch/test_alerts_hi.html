@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="hi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgriTwin Test Harness - alerts (hi)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <link rel="stylesheet" crossorigin href="../dist/assets/index-B50v-KXJ.css">
+    <script>
+      // 1. Seed demo user so Login screen is bypassed
+      localStorage.setItem('agritwin_demo_user', JSON.stringify({
+        uid: 'demo-farmer-123',
+        email: 'demo@agritwin.farm',
+        displayName: 'Ramesh Patel (Demo)',
+        isDemo: true
+      }));
+
+      // 2. Seed active field
+      localStorage.setItem('agritwin_active_field_id', 'field-demo-1');
+      localStorage.setItem('agritwin_user_fields', JSON.stringify([{
+        id: 'field-demo-1',
+        name: 'North Tomato Field',
+        crop: 'Tomato',
+        cropIcon: '🍅',
+        area: '2.5 Acres (1.0 Ha)',
+        village: 'Thondamuthur Village',
+        latitude: 11.017,
+        longitude: 76.956,
+        soilType: 'sandy_loam',
+        growthStage: 'mid',
+        pumpDischargeLph: 25000,
+        zones: [
+          { id: 'zone1', name: 'Zone 1 (North-West)', shortName: 'Zone 1', soilWater: 17.8, status: 'Good', sensorId: 'SM-Z01' },
+          { id: 'zone2', name: 'Zone 2 (North-East)', shortName: 'Zone 2', soilWater: 13.8, status: 'Needs Water', sensorId: 'SM-Z02' },
+          { id: 'zone3', name: 'Zone 3 (South-West)', shortName: 'Zone 3', soilWater: 16.2, status: 'Watch', sensorId: 'SM-Z03' },
+          { id: 'zone4', name: 'Zone 4 (South-East)', shortName: 'Zone 4', soilWater: 18.0, status: 'Good', sensorId: 'SM-Z04' }
+        ]
+      }]));
+
+      // 3. Set Language
+      localStorage.setItem('agritwin_language', 'hi');
+
+      // 4. Overflow detector after render
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          // Switch tab if needed
+          const buttons = Array.from(document.querySelectorAll('button, a'));
+          
+          // Tab navigation mapping
+          const tabMap = {
+            'home': ['Home', 'ಮುಖಪುಟ', 'होम'],
+            'my-fields': ['My Fields', 'ನನ್ನ ಹೊಲಗಳು', 'मेरे खेत'],
+            'water': ['Water', 'ನೀರು', 'पानी / सिंचाई'],
+            'weather': ['Weather', 'ಹವಾಮಾನ', 'मौसम'],
+            'alerts': ['Alerts', 'ಎಚ್ಚರಿಕೆಗಳು', 'अलर्ट'],
+            'field-monitor': ['Field Twin', 'Field Monitor', 'ಹೊಲದ ನಿಗಾ', 'खेत निगरानी'],
+            'plant-health': ['Plant Health', 'ಬೆಳೆ ಆರೋಗ್ಯ', 'पौधा स्वास्थ्य'],
+            'reports': ['Reports', 'ವರದಿಗಳು', 'रिपोर्ट'],
+            'what-if': ['What-If', 'ಏನಾಗಬಹುದು', 'अगर ऐसा हो'],
+            'settings': ['Settings', 'ಸೆಟ್ಟಿಂಗ್‌ಗಳು', 'सेटिंग्स'],
+            'raw-sensors': ['Raw Sensors', 'ಸೆನ್ಸರ್ ಮಾಹಿತಿ', 'कच्चा सेंसर डेटा']
+          };
+
+          const targetKeywords = tabMap['alerts'];
+          if (targetKeywords) {
+            const btn = buttons.find(b => targetKeywords.some(kw => (b.innerText || '').includes(kw)));
+            if (btn) {
+              btn.click();
+            }
+          }
+
+          setTimeout(() => {
+            const bodyScrollWidth = document.body.scrollWidth;
+            const docScrollWidth = document.documentElement.scrollWidth;
+            const winWidth = window.innerWidth;
+            const hasHorizontalScroll = docScrollWidth > winWidth || bodyScrollWidth > winWidth;
+            
+            console.log('--- TEST RUN REPORT ---');
+            console.log('Tab: alerts, Lang: hi, ViewportWidth: ' + winWidth + ', ScrollWidth: ' + docScrollWidth);
+            console.log('Horizontal Scroll Detected: ' + hasHorizontalScroll);
+
+            if (hasHorizontalScroll) {
+              const allElements = document.querySelectorAll('*');
+              const overflowing = [];
+              allElements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.right > winWidth + 1) {
+                  overflowing.push(el.tagName + (el.className ? '.' + el.className : '') + ' (right=' + Math.round(rect.right) + 'px)');
+                }
+              });
+              console.log('Overflowing Elements (' + overflowing.length + '):', overflowing.slice(0, 5).join('; '));
+            } else {
+              console.log('PERFECT_RESPONSIVE_FIT');
+            }
+          }, 1500);
+        }, 1000);
+      });
+    </script>
+    <script type="module" crossorigin src="../dist/assets/index-B8TOwdrC.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

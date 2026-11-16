@@ -1,42 +1,59 @@
 // AgriTwin — Automated Alert System & Anomaly Detection Engine
 
-import { DEMO_THRESHOLDS } from '../data/demoConfiguration';
+import { SOIL_PROFILES, DEMO_THRESHOLDS } from '../data/demoConfiguration';
 
 export function checkAlertConditions({
-  zones,
-  sensors,
+  zones = [],
+  sensors = [],
   previousMoistureState = {},
+  soilType = 'sandy_loam',
   thresholds = DEMO_THRESHOLDS
 }) {
   const generatedAlerts = [];
-  const moistureCritical = thresholds?.moisture?.critical ?? 24.5;
+  const soil = SOIL_PROFILES[soilType] || SOIL_PROFILES.sandy_loam;
+  const fc = soil.fc;
+  const pwp = soil.pwp;
+  const refillThreshold = parseFloat((fc - 0.40 * (fc - pwp)).toFixed(1)); // e.g. 14.0%
+  const criticalWiltThreshold = parseFloat((pwp + 2.0).toFixed(1));        // e.g. 10.0%
   const tempWarning = thresholds?.temperature?.warning ?? 34.0;
 
   // 1. Zone-specific checks
   zones.forEach(zone => {
-    const prevMoisture = previousMoistureState[zone.id] ?? zone.moisture;
-    const dropRate = prevMoisture - zone.moisture;
+    const moisture = typeof zone.soilWater === 'number' ? zone.soilWater : (zone.moisture ?? fc);
+    const prevMoisture = previousMoistureState[zone.id] ?? moisture;
+    const dropRate = prevMoisture - moisture;
 
-    // Critical low moisture (< 25%)
-    if (zone.moisture <= moistureCritical) {
+    // Critical wilt hazard (approaching PWP)
+    if (moisture <= criticalWiltThreshold) {
+      generatedAlerts.push({
+        zoneId: zone.id,
+        zoneName: zone.shortName || zone.name,
+        type: 'CRITICAL_WILT',
+        severity: 'CRITICAL',
+        message: `${zone.shortName || zone.name} soil water (${moisture.toFixed(1)}%) is dangerously close to Permanent Wilting Point (${pwp}%).`,
+        recommendedAction: 'Trigger irrigation cycle immediately to avoid permanent plant wilt.'
+      });
+    }
+    // Depletion beyond Readily Available Water (Refill point)
+    else if (moisture <= refillThreshold) {
       generatedAlerts.push({
         zoneId: zone.id,
         zoneName: zone.shortName || zone.name,
         type: 'LOW_MOISTURE',
-        severity: 'CRITICAL',
-        message: `${zone.shortName || zone.name} soil moisture (${zone.moisture.toFixed(1)}%) has fallen below the configured critical threshold.`,
-        recommendedAction: 'Trigger irrigation cycle immediately to avoid permanent crop wilt.'
+        severity: 'WARNING',
+        message: `${zone.shortName || zone.name} soil water (${moisture.toFixed(1)}%) is at or below the ${refillThreshold}% refill point (RAW depleted).`,
+        recommendedAction: 'Schedule irrigation cycle today to restore root zone to Field Capacity.'
       });
     }
 
-    // Rapid decline (> 2.0% change in simulation window)
-    if (dropRate > 1.8 && zone.moisture > moistureCritical) {
+    // Rapid decline (> 1.5% drop in simulation window)
+    if (dropRate > 1.2 && moisture > criticalWiltThreshold) {
       generatedAlerts.push({
         zoneId: zone.id,
         zoneName: zone.shortName || zone.name,
         type: 'RAPID_DECLINE',
         severity: 'WARNING',
-        message: `${zone.shortName || zone.name} soil moisture is decreasing rapidly (-${dropRate.toFixed(1)}%).`,
+        message: `${zone.shortName || zone.name} soil water is decreasing rapidly (-${dropRate.toFixed(1)}%).`,
         recommendedAction: 'Inspect root-zone infiltration and verify soil matrix drainage.'
       });
     }

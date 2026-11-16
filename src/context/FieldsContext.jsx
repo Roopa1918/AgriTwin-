@@ -3,15 +3,17 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { firebaseBridge } from '../services/firebase';
+import { SOIL_PROFILES, CROP_AGRONOMIC_PROFILES, TOMATO_GROWTH_STAGES } from '../data/demoConfiguration';
+import { getBaselineZonesForSoil } from '../services/recommendationEngine';
 
 const FieldsContext = createContext(null);
 
 // PRD Section 14: Required crop options
 export const CROP_OPTIONS = [
+  { id: 'Tomato', label: 'Tomato 🍅', icon: '🍅', waterNeed: 'Medium-High', daysToMaturity: 90 },
   { id: 'Rice', label: 'Rice (Paddy) 🌾', icon: '🌾', waterNeed: 'High', daysToMaturity: 120 },
   { id: 'Maize', label: 'Maize (Corn) 🌽', icon: '🌽', waterNeed: 'Medium', daysToMaturity: 105 },
   { id: 'Wheat', label: 'Wheat 🌾', icon: '🌾', waterNeed: 'Medium', daysToMaturity: 110 },
-  { id: 'Tomato', label: 'Tomato 🍅', icon: '🍅', waterNeed: 'Medium-High', daysToMaturity: 90 },
   { id: 'Potato', label: 'Potato 🥔', icon: '🥔', waterNeed: 'Medium', daysToMaturity: 95 },
   { id: 'Groundnut', label: 'Groundnut 🥜', icon: '🥜', waterNeed: 'Low-Medium', daysToMaturity: 100 },
   { id: 'Cotton', label: 'Cotton ☁️', icon: '☁️', waterNeed: 'Medium', daysToMaturity: 150 },
@@ -28,7 +30,26 @@ export function FieldsProvider({ children }) {
       const saved = localStorage.getItem('agritwin_user_fields');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map(f => {
+            const soil = SOIL_PROFILES[f.soilType || 'sandy_loam'] || SOIL_PROFILES.sandy_loam;
+            const isOutOfBounds = !f.zones || f.zones.length === 0 ||
+              f.zones.some(z => {
+                const val = typeof z === 'number' ? z : (typeof z?.soilWater === 'number' ? z.soilWater : (z?.moisture ?? null));
+                return val === null || val > soil.fc || val < soil.pwp;
+              });
+            const zones = isOutOfBounds ? getBaselineZonesForSoil(soil.id) : f.zones;
+
+            return {
+              ...f,
+              soilType: f.soilType || 'sandy_loam',
+              soilIsProvisional: f.soilIsProvisional !== undefined ? f.soilIsProvisional : (f.soilType ? f.soilType === 'sandy_loam' : true),
+              growthStage: f.growthStage || 'mid',
+              pumpDischargeLph: f.pumpDischargeLph !== undefined ? f.pumpDischargeLph : null,
+              zones
+            };
+          });
+        }
       }
     } catch (e) {
       console.warn('Error reading saved fields:', e);
@@ -67,10 +88,11 @@ export function FieldsProvider({ children }) {
   const activeField = fields.find(f => f.id === activeFieldId) || fields[0] || null;
 
   // Add new field from map drawing/selection wizard (PRD Section 14 & 15)
-  const addField = ({ userId, name, crop, latitude, longitude, area, boundary, village }) => {
-    const cropMeta = CROP_OPTIONS.find(c => c.id.toLowerCase() === crop.toLowerCase()) || { icon: '🌱' };
+  const addField = ({ userId, name, crop, latitude, longitude, area, boundary, village, soilType }) => {
+    const cropMeta = CROP_OPTIONS.find(c => c.id.toLowerCase() === (crop || 'Tomato').toLowerCase()) || { icon: '🍅' };
     const lat = parseFloat(latitude);
     const lon = parseFloat(longitude);
+    const chosenSoil = soilType || 'sandy_loam';
 
     // Compute simple boundary polygon if not drawn
     const poly = boundary && boundary.length >= 3 ? boundary : [
@@ -84,20 +106,24 @@ export function FieldsProvider({ children }) {
       id: 'field_' + Date.now(),
       userId: userId || 'user-default',
       name: name.trim() || 'My Farm Field',
-      crop: crop || 'Rice',
+      crop: crop || 'Tomato',
       cropIcon: cropMeta.icon,
+      soilType: chosenSoil,
+      soilIsProvisional: chosenSoil === 'sandy_loam',
+      growthStage: 'mid',
+      pumpDischargeLph: null,
       village: village || 'Selected Field Location',
       latitude: lat,
       longitude: lon,
-      area: area || '2.0 Acres',
+      area: area || '2.5 Acres',
       boundary: poly,
       createdAt: new Date().toISOString().split('T')[0],
       updatedAt: new Date().toISOString(),
       zones: [
-        { id: 'zone1', name: 'Zone A (North-West)', shortName: 'Zone A', soilWater: 42.0, status: 'Good', sensorId: 'SM-Z01' },
-        { id: 'zone2', name: 'Zone B (North-East - Target)', shortName: 'Zone B', soilWater: 24.5, status: 'Needs Water', sensorId: 'SM-Z02' },
-        { id: 'zone3', name: 'Zone C (South-West)', shortName: 'Zone C', soilWater: 39.0, status: 'Good', sensorId: 'SM-Z03' },
-        { id: 'zone4', name: 'Zone D (South-East)', shortName: 'Zone D', soilWater: 44.5, status: 'Good', sensorId: 'SM-Z04' }
+        { id: 'zone1', name: 'Zone A (North-West)', shortName: 'Zone A', soilWater: 17.8, status: 'Good', sensorId: 'SM-Z01' },
+        { id: 'zone2', name: 'Zone B (North-East - Target)', shortName: 'Zone B', soilWater: 13.8, status: 'Needs Water', sensorId: 'SM-Z02' },
+        { id: 'zone3', name: 'Zone C (South-West)', shortName: 'Zone C', soilWater: 16.2, status: 'Good', sensorId: 'SM-Z03' },
+        { id: 'zone4', name: 'Zone D (South-East)', shortName: 'Zone D', soilWater: 18.0, status: 'Good', sensorId: 'SM-Z04' }
       ]
     };
 
@@ -114,15 +140,19 @@ export function FieldsProvider({ children }) {
     if (fields.length > 0) return fields[0];
 
     const demoField = {
-      id: 'field_demo_mandya_01',
+      id: 'field_demo_tomato_01',
       userId: 'demo-presenter',
-      name: 'My Rice Field',
-      crop: 'Rice',
-      cropIcon: '🌾',
-      village: 'Mandya, Karnataka',
+      name: 'My Tomato Field',
+      crop: 'Tomato',
+      cropIcon: '🍅',
+      soilType: 'sandy_loam',
+      soilIsProvisional: true,
+      growthStage: 'mid',
+      pumpDischargeLph: null,
+      village: 'Rural Farm Plot',
       latitude: 12.5234,
       longitude: 76.8971,
-      area: '2.4 Acres',
+      area: '2.5 Acres',
       createdAt: new Date().toISOString().split('T')[0],
       boundary: [
         [12.5245, 76.8955],
@@ -131,10 +161,10 @@ export function FieldsProvider({ children }) {
         [12.5215, 76.8958]
       ],
       zones: [
-        { id: 'zone1', name: 'Zone A (North-West)', shortName: 'Zone A', soilWater: 41.5, status: 'Good', sensorId: 'SM-Z01' },
-        { id: 'zone2', name: 'Zone B (North-East - Target)', shortName: 'Zone B', soilWater: 23.8, status: 'Needs Water', sensorId: 'SM-Z02' },
-        { id: 'zone3', name: 'Zone C (South-West)', shortName: 'Zone C', soilWater: 38.0, status: 'Good', sensorId: 'SM-Z03' },
-        { id: 'zone4', name: 'Zone D (South-East)', shortName: 'Zone D', soilWater: 45.0, status: 'Good', sensorId: 'SM-Z04' }
+        { id: 'zone1', name: 'Zone A (North-West)', shortName: 'Zone A', soilWater: 17.8, status: 'Good', sensorId: 'SM-Z01' },
+        { id: 'zone2', name: 'Zone B (North-East - Target)', shortName: 'Zone B', soilWater: 13.8, status: 'Needs Water', sensorId: 'SM-Z02' },
+        { id: 'zone3', name: 'Zone C (South-West)', shortName: 'Zone C', soilWater: 16.2, status: 'Good', sensorId: 'SM-Z03' },
+        { id: 'zone4', name: 'Zone D (South-East)', shortName: 'Zone D', soilWater: 18.0, status: 'Good', sensorId: 'SM-Z04' }
       ]
     };
 
@@ -155,6 +185,19 @@ export function FieldsProvider({ children }) {
     });
   };
 
+  const updateField = (id, updates) => {
+    setFields(prev => prev.map(field => {
+      if (field.id === id) {
+        const updated = { ...field, ...updates, updatedAt: new Date().toISOString() };
+        if (updates.soilType !== undefined) {
+          updated.soilIsProvisional = (updates.soilType === 'sandy_loam');
+        }
+        return updated;
+      }
+      return field;
+    }));
+  };
+
   const updateActiveFieldZone = (zoneId, updates) => {
     setFields(prev => prev.map(field => {
       if (field.id === activeFieldId) {
@@ -172,10 +215,14 @@ export function FieldsProvider({ children }) {
       activeFieldId,
       setActiveFieldId,
       addField,
+      updateField,
       deleteField,
       loadDemoField,
       updateActiveFieldZone,
-      cropOptions: CROP_OPTIONS
+      cropOptions: CROP_OPTIONS,
+      soilProfiles: SOIL_PROFILES,
+      cropAgronomicProfiles: CROP_AGRONOMIC_PROFILES,
+      tomatoGrowthStages: TOMATO_GROWTH_STAGES
     }}>
       {children}
     </FieldsContext.Provider>

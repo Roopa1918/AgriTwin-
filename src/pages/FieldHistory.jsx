@@ -1,28 +1,36 @@
-// AgriTwin — Field History Page (PRD Section 18)
+// AgriTwin — Past Readings Page (PRD Section 18)
 // Simple, readable graphs for Soil Water, Field Temperature, and Rain.
 
 import React, { useState } from 'react';
 import { useFields } from '../context/FieldsContext';
 import { useTelemetry } from '../context/TelemetryContext';
+import { useLanguage } from '../context/LanguageContext';
 import TelemetryChart from '../components/charts/TelemetryChart';
 import { BarChart2, Calendar, Droplets, Thermometer, CloudRain } from 'lucide-react';
 
 export default function FieldHistory() {
+  const { t } = useLanguage();
   const { activeField } = useFields();
   const { historyBuffer } = useTelemetry();
-  const [timeRange, setTimeRange] = useState('Today'); // 'Today', '7 Days', '30 Days'
+  const [timeRange, setTimeRange] = useState('24h');
+
+  const timeRangeOptions = [
+    { key: '24h', label: t('pastReadings.last24Hours') },
+    { key: '7d', label: t('pastReadings.last7Days') },
+    { key: '30d', label: t('pastReadings.last30Days') }
+  ];
 
   // Datasets
   const soilWaterDatasets = [
     {
-      label: 'Zone 1 Soil Water (%)',
+      label: `Zone 1 ${t('fieldMonitor.soilWaterContent')} (%)`,
       data: historyBuffer.zone1,
       borderColor: '#10b981',
       backgroundColor: 'rgba(16, 185, 129, 0.1)',
       tension: 0.3
     },
     {
-      label: 'Zone 2 Soil Water (%)',
+      label: `Zone 2 ${t('fieldMonitor.soilWaterContent')} (%)`,
       data: historyBuffer.zone2,
       borderColor: '#ef4444',
       backgroundColor: 'rgba(239, 68, 68, 0.1)',
@@ -33,7 +41,7 @@ export default function FieldHistory() {
 
   const tempDatasets = [
     {
-      label: 'Field Temperature (°C)',
+      label: `${t('weather.temperature')} (°C)`,
       data: historyBuffer.temperatures,
       borderColor: '#f59e0b',
       backgroundColor: 'rgba(245, 158, 11, 0.15)',
@@ -44,7 +52,7 @@ export default function FieldHistory() {
 
   const rainDatasets = [
     {
-      label: 'Rain (mm)',
+      label: `${t('weather.precipitation')} (mm)`,
       data: historyBuffer.rainfall,
       borderColor: '#0284c7',
       backgroundColor: 'rgba(2, 132, 199, 0.35)',
@@ -53,14 +61,16 @@ export default function FieldHistory() {
     }
   ];
 
+  const selectedRangeLabel = timeRangeOptions.find(o => o.key === timeRange)?.label || t('pastReadings.last24Hours');
+
   return (
     <div className="page-container">
       {/* Header */}
       <div className="page-header">
         <div className="page-header-text">
-          <h1>📊 Field History</h1>
+          <h1>📊 {t('pastReadings.title')}</h1>
           <p>
-            Review past soil water levels, field temperature, and rainfall records for <strong>{activeField?.name}</strong>.
+            {t('pastReadings.subtitle')}
           </p>
         </div>
 
@@ -72,18 +82,18 @@ export default function FieldHistory() {
           borderRadius: 'var(--radius-md)',
           border: '1px solid var(--border-subtle)'
         }}>
-          {['Today', '7 Days', '30 Days'].map(r => (
+          {timeRangeOptions.map(r => (
             <button
-              key={r}
-              onClick={() => setTimeRange(r)}
-              className={`btn btn-sm ${timeRange === r ? 'btn-primary' : 'btn-secondary'}`}
+              key={r.key}
+              onClick={() => setTimeRange(r.key)}
+              className={`btn btn-sm ${timeRange === r.key ? 'btn-primary' : 'btn-secondary'}`}
               style={{
                 border: 'none',
-                background: timeRange === r ? 'var(--emerald-500)' : 'transparent',
-                color: timeRange === r ? '#fff' : 'var(--text-muted)'
+                background: timeRange === r.key ? 'var(--emerald-500)' : 'transparent',
+                color: timeRange === r.key ? '#fff' : 'var(--text-muted)'
               }}
             >
-              {r}
+              {r.label}
             </button>
           ))}
         </div>
@@ -96,9 +106,9 @@ export default function FieldHistory() {
           <div className="glass-card-header">
             <div className="glass-card-title">
               <Droplets size={18} color="var(--emerald-400)" />
-              <span>Soil Water Over {timeRange}</span>
+              <span>{t('pastReadings.soilWaterTrend')} &bull; {selectedRangeLabel}</span>
             </div>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Percent Moisture (% VWC)</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>% VWC</span>
           </div>
           <TelemetryChart 
             labels={historyBuffer.times}
@@ -115,9 +125,9 @@ export default function FieldHistory() {
           <div className="glass-card-header">
             <div className="glass-card-title">
               <Thermometer size={18} color="#f59e0b" />
-              <span>Field Temperature Over {timeRange}</span>
+              <span>{t('weather.temperature')} &bull; {selectedRangeLabel}</span>
             </div>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Degrees Celsius (°C)</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>°C</span>
           </div>
           <TelemetryChart 
             labels={historyBuffer.times}
@@ -134,9 +144,9 @@ export default function FieldHistory() {
           <div className="glass-card-header">
             <div className="glass-card-title">
               <CloudRain size={18} color="var(--color-water)" />
-              <span>Rain Recorded Over {timeRange}</span>
+              <span>{t('weather.precipitation')} &bull; {selectedRangeLabel}</span>
             </div>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Millimeters (mm)</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>mm</span>
           </div>
           <TelemetryChart 
             labels={historyBuffer.times}

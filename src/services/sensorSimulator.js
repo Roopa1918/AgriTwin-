@@ -134,7 +134,7 @@ class SensorSimulatorEngine {
     }
     // Boost all zones slightly
     this.zones.forEach(z => {
-      z.moisture = Math.min(55, z.moisture + 3.5);
+      z.moisture = Math.min(18.5, z.moisture + 1.5);
     });
   }
 
@@ -248,22 +248,22 @@ class SensorSimulatorEngine {
       const microJitter = (Math.random() - 0.5) * 0.08;
 
       if (zone.id === 'zone2') {
-        // Controlled demonstration sequence for Zone 2
+        // Controlled demonstration sequence for Zone 2 (Sandy Loam: FC 18%, Refill 14%, PWP 8%)
         if (this.isDecliningZone2) {
-          // Gradual step down: e.g. -0.4% per tick until 24.2%
-          if (zone.moisture > 24.2) {
-            zone.moisture = parseFloat((zone.moisture - 0.45).toFixed(1));
+          // Gradual step down: e.g. -0.25% per tick until 11.5%
+          if (zone.moisture > 11.5) {
+            zone.moisture = parseFloat((zone.moisture - 0.25).toFixed(1));
           } else {
             // Plateau at critical demonstration value
-            zone.moisture = parseFloat((24.2 + (Math.random() - 0.5) * 0.1).toFixed(1));
+            zone.moisture = parseFloat((11.5 + (Math.random() - 0.5) * 0.1).toFixed(1));
           }
         } else if (this.isIrrigatingZone2) {
-          // Virtual Irrigation actively increasing moisture to 38.4%
-          if (zone.moisture < 38.4) {
-            zone.moisture = parseFloat((zone.moisture + 1.2).toFixed(1));
+          // Virtual Irrigation actively increasing moisture to 17.8% (Field Capacity)
+          if (zone.moisture < 17.8) {
+            zone.moisture = parseFloat((zone.moisture + 0.6).toFixed(1));
             zone.irrigationActive = true;
           } else {
-            zone.moisture = parseFloat((38.4 + microJitter).toFixed(1));
+            zone.moisture = parseFloat((17.8 + microJitter).toFixed(1));
             zone.irrigationActive = false;
             this.isIrrigatingZone2 = false; // completed recovery
           }
@@ -273,24 +273,24 @@ class SensorSimulatorEngine {
       } else {
         // Other zones fluctuate smoothly in optimal range
         if (this.scenario === 'hotDry') {
-          zone.moisture = Math.max(26, parseFloat((zone.moisture - 0.08).toFixed(1)));
+          zone.moisture = Math.max(12.0, parseFloat((zone.moisture - 0.05).toFixed(1)));
         } else {
           zone.moisture = parseFloat((zone.moisture + microJitter).toFixed(1));
         }
       }
 
-      // Update Zone status label & health score
-      if (zone.moisture >= DEMO_THRESHOLDS.moisture.good) {
+      // Update Zone status label & health score against Sandy Loam scientific thresholds
+      if (zone.moisture >= 18.0) {
         zone.status = 'GOOD';
-        zone.health = Math.min(96, Math.round(85 + (zone.moisture - 40) * 1.5));
+        zone.health = Math.min(96, Math.round(88 + (zone.moisture - 18) * 2.0));
         zone.waterStress = 'Low';
-      } else if (zone.moisture >= DEMO_THRESHOLDS.moisture.moderate) {
+      } else if (zone.moisture >= 14.0) {
         zone.status = 'MODERATE';
-        zone.health = Math.round(75 + (zone.moisture - 25) * 0.6);
+        zone.health = Math.round(80 + (zone.moisture - 14) * 1.5);
         zone.waterStress = 'Moderate';
       } else {
         zone.status = 'LOW';
-        zone.health = Math.max(45, Math.round(50 + (zone.moisture - 20) * 1.2));
+        zone.health = Math.max(45, Math.round(55 + (zone.moisture - 8) * 2.0));
         zone.waterStress = 'High';
       }
 
@@ -360,10 +360,11 @@ class SensorSimulatorEngine {
 
     alerts.forEach(alert => firebaseBridge.addAlert(alert));
 
-    // If Zone 2 has recovered (moisture > 35%), auto-resolve LOW_MOISTURE alerts for Zone 2
+    // If Zone 2 has recovered (moisture >= 16.5%), auto-resolve alerts for Zone 2
     const z2 = this.zones.find(z => z.id === 'zone2');
-    if (z2 && z2.moisture >= 35.0) {
+    if (z2 && z2.moisture >= 16.5) {
       firebaseBridge.resolveAlertsForZone('zone2', 'LOW_MOISTURE');
+      firebaseBridge.resolveAlertsForZone('zone2', 'CRITICAL_WILT');
     }
 
     // Evaluate Recommendations for each zone

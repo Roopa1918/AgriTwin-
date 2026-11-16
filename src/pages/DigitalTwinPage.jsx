@@ -1,12 +1,14 @@
 // AgriTwin — Dedicated Fullscreen 3D Digital Twin Centerpiece Page (PRD Section 12 & 13)
 import React, { useState } from 'react';
 import { useTelemetry } from '../context/TelemetryContext';
+import { useLanguage } from '../context/LanguageContext';
 import DigitalTwin3D from '../components/3d/DigitalTwin3D';
 import ZoneDetailDrawer from '../components/3d/ZoneDetailDrawer';
 import DisclaimerAlert from '../components/common/DisclaimerAlert';
 import { Layers, Droplets, RotateCcw, Eye, ShieldCheck, Activity, Info, AlertTriangle, Sparkles } from 'lucide-react';
 
 export default function DigitalTwinPage() {
+  const { t } = useLanguage();
   const { 
     zones, 
     selectedZoneId, 
@@ -24,10 +26,9 @@ export default function DigitalTwinPage() {
       {/* Page Header */}
       <div className="page-header">
         <div className="page-header-text">
-          <h1>Cyber-Physical 3D Agricultural Digital Twin</h1>
+          <h1>{t('fieldTwin.title')}</h1>
           <p>
-            Interactive Three.js virtual model of your agricultural field. Rotatable, zoomable terrain 
-            responding in real-time to simulated IoT soil moisture probes and environmental sensors.
+            {t('fieldTwin.subtitle')}
           </p>
         </div>
 

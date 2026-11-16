@@ -5,7 +5,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { useFields, CROP_OPTIONS } from '../context/FieldsContext';
+import { SOIL_PROFILES } from '../data/demoConfiguration';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import LanguageSelector from '../components/common/LanguageSelector';
 import { searchLocations, reverseGeocode, calculatePolygonAcres } from '../services/geocodingService';
 import { 
   Search, 
@@ -25,6 +28,7 @@ import {
 export default function SelectFieldPage({ onCancel, onFieldCreated }) {
   const { addField, fields } = useFields();
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   // Wizard Steps: 
   // 'map' (draw boundary & search) -> 'confirm' (Is this your field?) -> 'details' (Name & Crop) -> 'success'
@@ -45,8 +49,9 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
   const [villageName, setVillageName] = useState('Mandya Rural, Karnataka');
 
   // Field Metadata Form
-  const [fieldName, setFieldName] = useState('My Rice Field');
-  const [selectedCrop, setSelectedCrop] = useState('Rice');
+  const [fieldName, setFieldName] = useState('My Tomato Field');
+  const [selectedCrop, setSelectedCrop] = useState('Tomato');
+  const [selectedSoil, setSelectedSoil] = useState('sandy_loam');
   const [customCrop, setCustomCrop] = useState('');
   const [interactionMode, setInteractionMode] = useState('pan'); // 'pan' (Move & explore map) | 'draw' (Draw boundary)
   const interactionModeRef = useRef(interactionMode);
@@ -339,6 +344,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
       userId: user?.uid || 'user-default',
       name: fieldName.trim() || 'My Farm Field',
       crop: finalCrop,
+      soilType: selectedSoil,
       latitude: fieldCenter.lat,
       longitude: fieldCenter.lng,
       area: finalArea,
@@ -381,23 +387,24 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
               style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <ArrowLeft size={16} />
-              <span>Back</span>
+              <span>{t('selectField.back')}</span>
             </button>
           )}
 
           <div>
             <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>🌾</span> Select Your Field
+              <span>🌾</span> {t('selectField.title')}
             </h1>
             <p style={{ fontSize: '0.82rem', color: 'var(--emerald-400)', marginTop: '2px' }}>
-              “Choose the agricultural field you want to monitor.”
+              {t('selectField.subtitle')}
             </p>
           </div>
         </div>
 
-        {/* Layer Switcher */}
-        {currentStep === 'map' && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {/* Layer Switcher & Language Selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <LanguageSelector />
+          {currentStep === 'map' && (
             <button
               onClick={toggleLayer}
               className="btn btn-secondary btn-sm"
@@ -405,10 +412,10 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
               title="Toggle Satellite vs Street View"
             >
               <Layers size={15} color="var(--emerald-400)" />
-              <span>{activeLayer === 'satellite' ? 'Satellite 🛰️' : 'Street Map 🗺️'}</span>
+              <span>{activeLayer === 'satellite' ? t('selectField.satellite') : t('selectField.streetMap')}</span>
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </header>
 
       {/* STEP 1: INTERACTIVE MAP & 3-WAY SELECTION */}
@@ -448,7 +455,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="🔎 Search field location..."
+                  placeholder={t('selectField.searchPlaceholder')}
                   style={{
                     width: '100%',
                     background: 'rgba(255,255,255,0.06)',
@@ -490,7 +497,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                 }}
               >
                 <Navigation size={15} color="var(--emerald-400)" />
-                <span>{locationLoading ? 'Finding...' : '📍 Use Live GPS'}</span>
+                <span>{locationLoading ? t('selectField.locating') : t('selectField.useLiveLocation')}</span>
               </button>
             </div>
 
@@ -518,7 +525,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                   borderRadius: '50%',
                   animation: 'spin 0.8s linear infinite'
                 }} />
-                <span>Searching locations across farms, campuses, landmarks & PIN codes...</span>
+                <span>{t('selectField.searchingPlaceholder') || 'Searching locations across farms, campuses, landmarks & PIN codes...'}</span>
               </div>
             )}
 
@@ -548,7 +555,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                   alignItems: 'center'
                 }}>
                   <span>📍 Found {searchResults.length} places & landmarks</span>
-                  <span style={{ color: 'var(--text-muted)' }}>Click 'Select Location' to center map</span>
+                  <span style={{ color: 'var(--text-muted)' }}>{t('selectField.clickSelectLocation') || "Click 'Select Location' to center map"}</span>
                 </div>
 
                 {searchResults.map((item) => (
@@ -646,7 +653,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                         flexShrink: 0
                       }}
                     >
-                      <span>Select Location</span>
+                      <span>{t('selectField.selectLocationBtn')}</span>
                       <ArrowRight size={14} />
                     </button>
                   </div>
@@ -725,7 +732,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                   transition: 'all 0.2s'
                 }}
               >
-                <span>✋ Move Map</span>
+                <span>✋ {t('selectField.modeMove')}</span>
               </button>
 
               <button
@@ -749,7 +756,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                   transition: 'all 0.2s'
                 }}
               >
-                <span>✏️ Draw Boundary</span>
+                <span>✏️ {t('selectField.modeDraw')}</span>
               </button>
 
               <button
@@ -763,24 +770,24 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                 title="Re-center on selected field pin"
                 style={{ minHeight: '44px', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}
               >
-                <span>🎯 Center</span>
+                <span>🎯 {t('selectField.centerBtn')}</span>
               </button>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <span style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: 'var(--emerald-400)', fontWeight: 700, letterSpacing: '0.04em' }}>
-                  {interactionMode === 'pan' ? 'Navigation Mode' : 'Boundary Drawing Mode'}
+                  {interactionMode === 'pan' ? t('selectField.modeMove') : t('selectField.modeDraw')}
                 </span>
                 <div style={{ fontSize: '0.92rem', fontWeight: 600, color: '#fff', marginTop: '2px' }}>
                   {interactionMode === 'pan' ? (
-                    <span>✋ Click & drag anywhere to move freely. Zoom in/out to find your field.</span>
+                    <span>✋ {t('selectField.modeMove')}</span>
                   ) : boundaryPoints.length >= 3 ? (
                     <span style={{ color: 'var(--emerald-400)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <CheckCircle2 size={16} /> Boundary polygon completed ✓
+                      <CheckCircle2 size={16} /> {t('selectField.pointsDrawn')}: {boundaryPoints.length} ✓
                     </span>
                   ) : (
-                    <span>✏️ Click corners on the map around your land to draw boundary</span>
+                    <span>✏️ {t('selectField.drawInstruction')}</span>
                   )}
                 </div>
               </div>
@@ -796,7 +803,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                   color: 'var(--emerald-300)',
                   whiteSpace: 'nowrap'
                 }}>
-                  Area: {calculatedArea} acres
+                  {t('selectField.estimatedArea')}: {calculatedArea} acres
                 </div>
               )}
             </div>
@@ -809,7 +816,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                   style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                 >
                   <RotateCcw size={14} />
-                  <span>Redraw Boundary</span>
+                  <span>{t('selectField.clearBoundary')}</span>
                 </button>
               )}
 
@@ -827,7 +834,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                   gap: '8px'
                 }}
               >
-                <span>✓ Use This Field</span>
+                <span>✓ {t('selectField.confirmFieldArea')}</span>
                 <ArrowRight size={18} />
               </button>
             </div>
@@ -870,10 +877,10 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
               </div>
 
               <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#fff' }}>
-                Is this your field?
+                {t('selectField.confirmTitle')}
               </h2>
               <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                Verify the location and boundary before creating your Digital Twin.
+                {t('selectField.confirmSubtitle')}
               </p>
             </div>
 
@@ -888,28 +895,28 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
               gap: '12px'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>Location</span>
+                <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>{t('selectField.villageLocation')}</span>
                 <span style={{ fontSize: '0.94rem', fontWeight: 700, color: '#fff' }}>{villageName}</span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>Approximate Area</span>
+                <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>{t('selectField.estimatedArea')}</span>
                 <span style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--emerald-400)' }}>
                   {calculatedArea > 0 ? `${calculatedArea} acres` : '2.0 acres'}
                 </span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>Latitude & Longitude</span>
+                <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>{t('selectField.gpsCoordinates')}</span>
                 <span style={{ fontSize: '0.84rem', fontFamily: 'monospace', color: 'var(--text-dim)' }}>
                   {fieldCenter.lat.toFixed(4)}°N, {fieldCenter.lng.toFixed(4)}°E
                 </span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>Boundary Points</span>
+                <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>{t('selectField.drawInstruction')}</span>
                 <span style={{ fontSize: '0.85rem', color: '#fff' }}>
-                  {boundaryPoints.length >= 3 ? `${boundaryPoints.length} polygon points` : 'Center Plot Boundary'}
+                  {boundaryPoints.length >= 3 ? `${boundaryPoints.length} points` : 'Center Plot Boundary'}
                 </span>
               </div>
             </div>
@@ -921,7 +928,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                 className="btn btn-secondary"
                 style={{ flex: 1, padding: '13px', fontSize: '0.95rem' }}
               >
-                <span>↩ Select Again</span>
+                <span>↩ {t('selectField.adjustBoundary')}</span>
               </button>
 
               <button
@@ -935,7 +942,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                   boxShadow: '0 4px 20px rgba(16,185,129,0.3)'
                 }}
               >
-                <span>✓ Yes, Use This Field</span>
+                <span>✓ {t('selectField.yesConfirm')}</span>
                 <ArrowRight size={17} />
               </button>
             </div>
@@ -971,27 +978,27 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}
               >
                 <ArrowLeft size={16} />
-                <span style={{ fontSize: '0.84rem' }}>Back</span>
+                <span style={{ fontSize: '0.84rem' }}>{t('selectField.back')}</span>
               </button>
 
               <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#fff' }}>
-                Field Details 🌱
+                {t('selectField.detailsTitle')} 🌱
               </h2>
               <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                Give your field a recognizable name and select the crop you are cultivating.
+                {t('selectField.detailsSubtitle')}
               </p>
             </div>
 
             {/* Field Name Input — PRD Section 14 */}
             <div>
               <label style={{ display: 'block', fontSize: '0.86rem', color: '#fff', fontWeight: 700, marginBottom: '6px' }}>
-                What should we call this field?
+                {t('selectField.fieldNameLabel')}
               </label>
               <input
                 type="text"
                 value={fieldName}
                 onChange={(e) => setFieldName(e.target.value)}
-                placeholder="e.g. My Rice Field, South Plot"
+                placeholder={t('selectField.fieldNamePlaceholder')}
                 style={{
                   width: '100%',
                   background: 'rgba(5, 14, 10, 0.85)',
@@ -1008,7 +1015,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
             {/* Crop Selector — PRD Section 14 */}
             <div>
               <label style={{ display: 'block', fontSize: '0.86rem', color: '#fff', fontWeight: 700, marginBottom: '8px' }}>
-                What crop are you growing?
+                {t('selectField.cropTypeLabel')}
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(135px, 1fr))', gap: '8px' }}>
                 {CROP_OPTIONS.map(c => (
@@ -1031,7 +1038,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                       transition: 'all 0.15s'
                     }}
                   >
-                    <span>{c.label}</span>
+                    <span>{t(`crops.${c.id.toLowerCase()}`) || c.label}</span>
                   </button>
                 ))}
               </div>
@@ -1041,7 +1048,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                   type="text"
                   value={customCrop}
                   onChange={(e) => setCustomCrop(e.target.value)}
-                  placeholder="Enter your crop name..."
+                  placeholder={t('selectField.otherCropPlaceholder')}
                   style={{
                     width: '100%',
                     background: 'rgba(5, 14, 10, 0.85)',
@@ -1054,6 +1061,37 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
                   }}
                 />
               )}
+            </div>
+
+            {/* Soil Texture Selection (Requirement 4) */}
+            <div>
+              <label style={{ display: 'block', fontSize: '0.86rem', color: '#fff', fontWeight: 700, marginBottom: '6px' }}>
+                {t('agronomics.soilTypeLabel')}
+              </label>
+              <select
+                value={selectedSoil}
+                onChange={(e) => setSelectedSoil(e.target.value)}
+                style={{
+                  width: '100%',
+                  background: 'rgba(5, 14, 10, 0.85)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '12px 14px',
+                  color: selectedSoil === 'sandy_loam' ? '#fbbf24' : '#fff',
+                  fontSize: '0.92rem',
+                  fontWeight: 600,
+                  outline: 'none'
+                }}
+              >
+                {Object.values(SOIL_PROFILES).map(profile => (
+                  <option key={profile.id} value={profile.id} style={{ background: '#050f0a', color: '#fff' }}>
+                    {t(`agronomics.soilTypes.${profile.id}`) || profile.name}
+                  </option>
+                ))}
+              </select>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)', display: 'block', marginTop: '4px' }}>
+                {t('agronomics.soilTypeDesc')}
+              </span>
             </div>
 
             {/* Create My Field Button — PRD Section 14 */}
@@ -1074,7 +1112,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
               }}
             >
               <Sparkles size={18} />
-              <span>🌱 Create My Field</span>
+              <span>🌱 {t('selectField.createDigitalTwin')}</span>
             </button>
           </div>
         </div>
@@ -1118,11 +1156,10 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
             </div>
 
             <h2 style={{ fontSize: '1.6rem', color: '#fff', fontWeight: 800 }}>
-              {fieldName} is Ready! 🌱
+              {fieldName} - {t('selectField.fieldCreatedSuccess')} 🌱
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: 1.5 }}>
-              Your digital field boundary at <strong>{villageName}</strong> has been saved. 
-              Live weather is now streaming for your coordinates and your 3D Digital Twin is generated!
+              {t('selectField.loadingDigitalTwin')}
             </p>
 
             <button
@@ -1130,7 +1167,7 @@ export default function SelectFieldPage({ onCancel, onFieldCreated }) {
               className="btn btn-primary"
               style={{ padding: '13px 32px', fontSize: '1rem', fontWeight: 700, marginTop: '8px' }}
             >
-              Open Digital Twin Dashboard
+              {t('home.viewDigitalTwin')}
             </button>
           </div>
         </div>

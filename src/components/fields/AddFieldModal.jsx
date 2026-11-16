@@ -4,7 +4,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { useFields, CROP_OPTIONS } from '../../context/FieldsContext';
+import { SOIL_PROFILES } from '../../data/demoConfiguration';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { searchLocations, reverseGeocode, calculatePolygonAcres } from '../../services/geocodingService';
 import { 
   Search, 
@@ -23,6 +25,7 @@ import {
 export default function AddFieldModal({ isOpen, onClose }) {
   const { addField } = useFields();
   const { user } = useAuth();
+  const { t } = useLanguage();
 
   const [step, setStep] = useState(1); // 1: Map & Boundary, 2: Name & Crop, 3: Success
 
@@ -40,8 +43,9 @@ export default function AddFieldModal({ isOpen, onClose }) {
   const [villageName, setVillageName] = useState('Selected Field Location');
 
   // Form State
-  const [fieldName, setFieldName] = useState('My Rice Field');
-  const [selectedCrop, setSelectedCrop] = useState('Rice');
+  const [fieldName, setFieldName] = useState('My Tomato Field');
+  const [selectedCrop, setSelectedCrop] = useState('Tomato');
+  const [selectedSoil, setSelectedSoil] = useState('sandy_loam');
   const [customCrop, setCustomCrop] = useState('');
   const [interactionMode, setInteractionMode] = useState('pan'); // 'pan' | 'draw'
   const interactionModeRef = useRef(interactionMode);
@@ -251,6 +255,7 @@ export default function AddFieldModal({ isOpen, onClose }) {
       userId: user?.uid || 'user-default',
       name: fieldName.trim() || 'My Farm Field',
       crop: finalCrop,
+      soilType: selectedSoil,
       latitude: fieldCenter.lat,
       longitude: fieldCenter.lng,
       area: finalArea,
@@ -296,9 +301,9 @@ export default function AddFieldModal({ isOpen, onClose }) {
               Step {step} of 3
             </span>
             <h2 style={{ fontSize: '1.25rem', color: '#fff', fontWeight: 800 }}>
-              {step === 1 && '🌾 Select Your Field'}
-              {step === 2 && 'Tell us about your field 🌱'}
-              {step === 3 && 'Field Created Successfully! 🎉'}
+              {step === 1 && `🌾 ${t('selectField.title')}`}
+              {step === 2 && `🌱 ${t('selectField.detailsTitle')}`}
+              {step === 3 && `🎉 ${t('selectField.fieldCreatedSuccess')}`}
             </h2>
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', minHeight: '36px', minWidth: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -317,7 +322,7 @@ export default function AddFieldModal({ isOpen, onClose }) {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="🔎 Search location..."
+                  placeholder={t('selectField.searchPlaceholder')}
                   style={{
                     width: '100%',
                     background: 'rgba(5, 14, 10, 0.85)',
@@ -337,7 +342,7 @@ export default function AddFieldModal({ isOpen, onClose }) {
                 style={{ minHeight: '42px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}
               >
                 <Navigation size={14} color="var(--emerald-400)" />
-                <span>{locationLoading ? 'Finding...' : '📍 Use Live GPS'}</span>
+                <span>{locationLoading ? t('selectField.locating') : t('selectField.useLiveLocation')}</span>
               </button>
             </div>
 
@@ -352,7 +357,7 @@ export default function AddFieldModal({ isOpen, onClose }) {
                 color: 'var(--emerald-400)',
                 fontSize: '0.84rem'
               }}>
-                🔍 Searching places, landmarks & PIN codes...
+                🔍 {t('selectField.searchPlaceholder')}...
               </div>
             )}
 
@@ -438,7 +443,7 @@ export default function AddFieldModal({ isOpen, onClose }) {
                   cursor: 'pointer'
                 }}
               >
-                ✋ Pan / Move Map
+                ✋ {t('selectField.modeMove')}
               </button>
 
               <button
@@ -456,7 +461,7 @@ export default function AddFieldModal({ isOpen, onClose }) {
                   cursor: 'pointer'
                 }}
               >
-                ✏️ Draw Boundary
+                ✏️ {t('selectField.modeDraw')}
               </button>
 
               <button
@@ -489,8 +494,8 @@ export default function AddFieldModal({ isOpen, onClose }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.84rem' }}>
               <span style={{ color: 'var(--text-muted)' }}>
                 {boundaryPoints.length >= 3 
-                  ? `✓ ${boundaryPoints.length} points selected (${calculatedArea} acres)` 
-                  : 'Tap points on the map to draw your field boundary'}
+                  ? `✓ ${boundaryPoints.length} points (${calculatedArea} acres)` 
+                  : t('selectField.drawInstruction')}
               </span>
 
               {boundaryPoints.length > 0 && (
@@ -507,7 +512,7 @@ export default function AddFieldModal({ isOpen, onClose }) {
                   style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                 >
                   <RotateCcw size={13} />
-                  <span>Redraw</span>
+                  <span>{t('selectField.clearBoundary')}</span>
                 </button>
               )}
             </div>
@@ -517,7 +522,7 @@ export default function AddFieldModal({ isOpen, onClose }) {
               className="btn btn-primary"
               style={{ width: '100%', padding: '12px', fontWeight: 700 }}
             >
-              <span>✓ Use This Field & Continue</span>
+              <span>✓ {t('selectField.confirmFieldArea')}</span>
               <ArrowRight size={16} />
             </button>
           </div>
@@ -528,13 +533,13 @@ export default function AddFieldModal({ isOpen, onClose }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.86rem', color: '#fff', fontWeight: 700, marginBottom: '6px' }}>
-                What should we call this field?
+                {t('selectField.fieldNameLabel')}
               </label>
               <input
                 type="text"
                 value={fieldName}
                 onChange={(e) => setFieldName(e.target.value)}
-                placeholder="e.g. My Rice Field, East Maize Plot"
+                placeholder={t('selectField.fieldNamePlaceholder')}
                 style={{
                   width: '100%',
                   background: 'rgba(5, 14, 10, 0.85)',
@@ -549,7 +554,7 @@ export default function AddFieldModal({ isOpen, onClose }) {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.86rem', color: '#fff', fontWeight: 700, marginBottom: '8px' }}>
-                What crop are you growing?
+                {t('selectField.cropTypeLabel')}
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '8px' }}>
                 {CROP_OPTIONS.map(c => (
@@ -571,7 +576,7 @@ export default function AddFieldModal({ isOpen, onClose }) {
                       gap: '6px'
                     }}
                   >
-                    <span>{c.label}</span>
+                    <span>{t(`crops.${c.id.toLowerCase()}`) || c.label}</span>
                   </button>
                 ))}
               </div>
@@ -579,7 +584,7 @@ export default function AddFieldModal({ isOpen, onClose }) {
               {selectedCrop === 'Other' && (
                 <input
                   type="text"
-                  placeholder="Enter crop name..."
+                  placeholder={t('selectField.otherCropPlaceholder')}
                   value={customCrop}
                   onChange={(e) => setCustomCrop(e.target.value)}
                   style={{
@@ -596,12 +601,43 @@ export default function AddFieldModal({ isOpen, onClose }) {
               )}
             </div>
 
+            {/* Soil Texture Selection (Requirement 4) */}
+            <div>
+              <label style={{ display: 'block', fontSize: '0.86rem', color: '#fff', fontWeight: 700, marginBottom: '6px' }}>
+                {t('agronomics.soilTypeLabel')}
+              </label>
+              <select
+                value={selectedSoil}
+                onChange={(e) => setSelectedSoil(e.target.value)}
+                style={{
+                  width: '100%',
+                  background: 'rgba(5, 14, 10, 0.85)',
+                  border: '1px solid var(--border-subtle)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '10px 12px',
+                  color: selectedSoil === 'sandy_loam' ? '#fbbf24' : '#fff',
+                  fontSize: '0.88rem',
+                  fontWeight: 600,
+                  outline: 'none'
+                }}
+              >
+                {Object.values(SOIL_PROFILES).map(profile => (
+                  <option key={profile.id} value={profile.id} style={{ background: '#050f0a', color: '#fff' }}>
+                    {t(`agronomics.soilTypes.${profile.id}`) || profile.name}
+                  </option>
+                ))}
+              </select>
+              <span style={{ fontSize: '0.74rem', color: 'var(--text-dim)', display: 'block', marginTop: '4px' }}>
+                {t('agronomics.soilTypeDesc')}
+              </span>
+            </div>
+
             <div style={{ display: 'flex', gap: '10px', marginTop: '6px' }}>
               <button onClick={() => setStep(1)} className="btn btn-secondary" style={{ flex: 1 }}>
-                <ArrowLeft size={16} /> Back to Map
+                <ArrowLeft size={16} /> {t('selectField.back')}
               </button>
               <button onClick={handleFinish} className="btn btn-primary" style={{ flex: 2, fontWeight: 700 }}>
-                <span>🌱 Create My Field</span>
+                <span>🌱 {t('selectField.createDigitalTwin')}</span>
                 <Sparkles size={16} />
               </button>
             </div>
@@ -616,14 +652,14 @@ export default function AddFieldModal({ isOpen, onClose }) {
             </div>
 
             <h3 style={{ fontSize: '1.35rem', color: '#fff', fontWeight: 800 }}>
-              {fieldName} is now active! 🌱
+              {fieldName} - {t('selectField.fieldCreatedSuccess')} 🌱
             </h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', maxWidth: '440px', lineHeight: 1.5 }}>
-              Your digital twin has been generated. Live weather for {villageName} is now connected.
+              {t('selectField.loadingDigitalTwin')}
             </p>
 
             <button onClick={onClose} className="btn btn-primary" style={{ padding: '11px 28px', fontSize: '0.95rem', fontWeight: 700, marginTop: '8px' }}>
-              Open Field Dashboard
+              {t('home.viewDigitalTwin')}
             </button>
           </div>
         )}

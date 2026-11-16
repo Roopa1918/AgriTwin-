@@ -2,6 +2,8 @@
 // Requirements 1–5: Phone Number OTP, Email/Password (Login & Create Account), and Google Sign-In
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import LanguageSelector from '../components/common/LanguageSelector';
 import { 
   Phone, 
   Mail, 
@@ -18,6 +20,7 @@ import {
 } from 'lucide-react';
 
 export default function Login() {
+  const { t } = useLanguage();
   const { 
     loginWithEmail, 
     registerWithEmail, 
@@ -165,6 +168,11 @@ export default function Login() {
         position: 'relative',
         zIndex: 10
       }}>
+        {/* Language Selector in Login Card */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '14px' }}>
+          <LanguageSelector />
+        </div>
+
         {/* Brand Header — PRD Requirement 1 */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <div style={{
@@ -183,10 +191,10 @@ export default function Login() {
             <span>🌱</span> AgriTwin
           </h1>
           <p style={{ color: 'var(--emerald-400)', fontSize: '0.96rem', fontWeight: 700, marginTop: '3px' }}>
-            Digital Twin for Smart Agriculture
+            {t('login.title')}
           </p>
           <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)', marginTop: '8px', lineHeight: 1.45 }}>
-            “Monitor your field. Understand your crops. Make better decisions.”
+            {t('login.subtitle')}
           </p>
         </div>
 
@@ -230,7 +238,7 @@ export default function Login() {
               }}
             >
               <Phone size={19} />
-              <span>📱 Continue with Phone</span>
+              <span>📱 {t('login.phoneTab')}</span>
             </button>
 
             {/* Option 2: Continue with Email */}
@@ -249,7 +257,7 @@ export default function Login() {
               }}
             >
               <Mail size={18} color="var(--emerald-400)" />
-              <span>✉️ Continue with Email</span>
+              <span>✉️ {t('login.emailTab')}</span>
             </button>
 
             {/* Option 3: Continue with Google */}
@@ -274,7 +282,7 @@ export default function Login() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
               </svg>
-              <span>Continue with Google</span>
+              <span>{t('login.googleSignIn')}</span>
             </button>
 
             {/* Divider */}
@@ -293,7 +301,7 @@ export default function Login() {
                 onClick={() => { clearErrors(); setAuthMode('register'); }}
                 style={{ background: 'none', border: 'none', color: 'var(--emerald-400)', fontWeight: 600, cursor: 'pointer' }}
               >
-                Create Account
+                {t('login.createAccountLink')}
               </button>
               <span style={{ color: 'var(--text-dim)' }}>•</span>
               <button
@@ -301,7 +309,7 @@ export default function Login() {
                 onClick={() => { clearErrors(); setAuthMode('forgot'); }}
                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
               >
-                Forgot Password?
+                {t('login.forgotPasswordLink')}
               </button>
             </div>
 
@@ -321,7 +329,7 @@ export default function Login() {
                 }}
               >
                 <Sparkles size={14} color="var(--emerald-400)" />
-                <span>1-Click Presentation Demo Mode</span>
+                <span>{t('login.demoLoginBtn')}</span>
               </button>
             </div>
           </div>
@@ -337,20 +345,20 @@ export default function Login() {
                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
                 <ArrowLeft size={16} />
-                <span style={{ fontSize: '0.84rem' }}>Back</span>
+                <span style={{ fontSize: '0.84rem' }}>{t('login.backToLogin')}</span>
               </button>
             </div>
 
             <h2 style={{ fontSize: '1.25rem', color: '#fff', fontWeight: 700 }}>
-              📱 Continue with Phone
+              📱 {t('login.enterPhoneHeader')}
             </h2>
             <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)', marginTop: '-8px' }}>
-              Enter your mobile number. We will send an SMS OTP to verify your account.
+              {t('login.enterPhonePrompt')}
             </p>
 
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '6px', fontWeight: 600 }}>
-                Mobile Number
+                {t('login.phoneNumberLabel')}
               </label>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <select
@@ -377,7 +385,7 @@ export default function Login() {
                   type="tel"
                   required
                   autoFocus
-                  placeholder="e.g. 9876543210"
+                  placeholder={t('login.phoneNumberPlaceholder')}
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   style={{
@@ -401,7 +409,7 @@ export default function Login() {
               className="btn btn-primary"
               style={{ width: '100%', padding: '13px', fontSize: '1rem', marginTop: '6px' }}
             >
-              <span>Send OTP</span>
+              <span>{t('login.sendOtp')}</span>
               <ArrowRight size={17} />
             </button>
           </form>
@@ -417,7 +425,7 @@ export default function Login() {
                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
                 <ArrowLeft size={16} />
-                <span style={{ fontSize: '0.84rem' }}>Change Number</span>
+                <span style={{ fontSize: '0.84rem' }}>{t('login.changeNumber')}</span>
               </button>
               <span style={{ fontSize: '0.82rem', color: 'var(--emerald-400)', fontWeight: 600 }}>
                 {countryCode} {phoneNumber}
@@ -426,10 +434,10 @@ export default function Login() {
 
             <div style={{ textAlign: 'center' }}>
               <h2 style={{ fontSize: '1.35rem', color: '#fff', fontWeight: 800 }}>
-                Verify Your Number
+                {t('login.enterOtpHeader')}
               </h2>
               <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                “Enter the OTP sent to your mobile number.”
+                {t('login.otpSentTo')} {countryCode} {phoneNumber}
               </p>
             </div>
 
@@ -460,7 +468,7 @@ export default function Login() {
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
                 <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
-                  Demo tip: enter any 6 digits (e.g. 123456)
+                  Demo: 123456
                 </span>
                 <button
                   type="button"
@@ -475,7 +483,7 @@ export default function Login() {
                     cursor: countdown > 0 ? 'default' : 'pointer'
                   }}
                 >
-                  {countdown > 0 ? `Resend in ${countdown}s` : 'Resend OTP'}
+                  {countdown > 0 ? `${t('login.resendIn')} ${countdown}s` : t('login.resendOtp')}
                 </button>
               </div>
             </div>
@@ -486,7 +494,7 @@ export default function Login() {
               className="btn btn-primary"
               style={{ width: '100%', padding: '14px', fontSize: '1rem', fontWeight: 700 }}
             >
-              <span>Verify</span>
+              <span>{t('login.verifyOtp')}</span>
               <ArrowRight size={18} />
             </button>
           </form>
@@ -502,17 +510,17 @@ export default function Login() {
                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
                 <ArrowLeft size={16} />
-                <span style={{ fontSize: '0.84rem' }}>Back</span>
+                <span style={{ fontSize: '0.84rem' }}>{t('login.backToLogin')}</span>
               </button>
             </div>
 
             <h2 style={{ fontSize: '1.25rem', color: '#fff', fontWeight: 700 }}>
-              ✉️ Continue with Email
+              ✉️ {t('login.emailLoginHeader')}
             </h2>
 
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '6px', fontWeight: 600 }}>
-                Email Address
+                {t('login.emailLabel')}
               </label>
               <input
                 type="email"
@@ -520,7 +528,7 @@ export default function Login() {
                 autoFocus
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="farmer@farm.com"
+                placeholder={t('login.emailPlaceholder')}
                 style={{
                   width: '100%',
                   background: 'rgba(5, 14, 10, 0.85)',
@@ -537,14 +545,14 @@ export default function Login() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <label style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                  Password
+                  {t('login.passwordLabel')}
                 </label>
                 <button
                   type="button"
                   onClick={() => { clearErrors(); setAuthMode('forgot'); }}
                   style={{ background: 'none', border: 'none', color: 'var(--emerald-400)', fontSize: '0.78rem', cursor: 'pointer' }}
                 >
-                  Forgot Password?
+                  {t('login.forgotPasswordLink')}
                 </button>
               </div>
               <div style={{ position: 'relative' }}>
@@ -590,7 +598,7 @@ export default function Login() {
               className="btn btn-primary"
               style={{ width: '100%', padding: '13px', fontSize: '1rem', marginTop: '4px' }}
             >
-              <span>Login</span>
+              <span>{t('login.signInBtn')}</span>
               <ArrowRight size={17} />
             </button>
 
@@ -600,7 +608,7 @@ export default function Login() {
                 onClick={() => { clearErrors(); setAuthMode('register'); }}
                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.84rem', cursor: 'pointer' }}
               >
-                Don't have an account? <strong style={{ color: 'var(--emerald-400)' }}>Create Account</strong>
+                <strong style={{ color: 'var(--emerald-400)' }}>{t('login.createAccountLink')}</strong>
               </button>
             </div>
           </form>
@@ -616,17 +624,17 @@ export default function Login() {
                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
                 <ArrowLeft size={16} />
-                <span style={{ fontSize: '0.84rem' }}>Back</span>
+                <span style={{ fontSize: '0.84rem' }}>{t('login.backToLogin')}</span>
               </button>
             </div>
 
             <h2 style={{ fontSize: '1.25rem', color: '#fff', fontWeight: 700 }}>
-              Create Farmer Account
+              {t('login.createAccountHeader')}
             </h2>
 
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '5px', fontWeight: 600 }}>
-                Email Address
+                {t('login.emailLabel')}
               </label>
               <input
                 type="email"
@@ -634,7 +642,7 @@ export default function Login() {
                 autoFocus
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="farmer@farm.com"
+                placeholder={t('login.emailPlaceholder')}
                 style={{
                   width: '100%',
                   background: 'rgba(5, 14, 10, 0.85)',
@@ -650,7 +658,7 @@ export default function Login() {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '5px', fontWeight: 600 }}>
-                Create Password
+                {t('login.passwordLabel')}
               </label>
               <input
                 type="password"
@@ -673,7 +681,7 @@ export default function Login() {
 
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '5px', fontWeight: 600 }}>
-                Confirm Password
+                {t('login.confirmPasswordLabel')}
               </label>
               <input
                 type="password"
@@ -700,7 +708,7 @@ export default function Login() {
               className="btn btn-primary"
               style={{ width: '100%', padding: '13px', fontSize: '1rem', marginTop: '6px' }}
             >
-              <span>Create Account</span>
+              <span>{t('login.createAccountBtn')}</span>
               <ArrowRight size={17} />
             </button>
 
@@ -710,7 +718,7 @@ export default function Login() {
                 onClick={() => { clearErrors(); setAuthMode('email'); }}
                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '0.84rem', cursor: 'pointer' }}
               >
-                Already have an account? <strong style={{ color: 'var(--emerald-400)' }}>Login</strong>
+                <strong style={{ color: 'var(--emerald-400)' }}>{t('login.alreadyHaveAccount')}</strong>
               </button>
             </div>
           </form>
@@ -726,20 +734,20 @@ export default function Login() {
                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
               >
                 <ArrowLeft size={16} />
-                <span style={{ fontSize: '0.84rem' }}>Back to Login</span>
+                <span style={{ fontSize: '0.84rem' }}>{t('login.backToLogin')}</span>
               </button>
             </div>
 
             <h2 style={{ fontSize: '1.25rem', color: '#fff', fontWeight: 700 }}>
-              Reset Password
+              {t('login.forgotPasswordHeader')}
             </h2>
             <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)', marginTop: '-6px' }}>
-              Enter your registered email address and we'll send you instructions to reset your password.
+              {t('login.forgotPasswordDesc')}
             </p>
 
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '6px', fontWeight: 600 }}>
-                Email Address
+                {t('login.emailLabel')}
               </label>
               <input
                 type="email"
@@ -747,7 +755,7 @@ export default function Login() {
                 autoFocus
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="farmer@farm.com"
+                placeholder={t('login.emailPlaceholder')}
                 style={{
                   width: '100%',
                   background: 'rgba(5, 14, 10, 0.85)',
@@ -767,7 +775,7 @@ export default function Login() {
               className="btn btn-primary"
               style={{ width: '100%', padding: '13px', fontSize: '0.98rem' }}
             >
-              <span>Send Reset Instructions</span>
+              <span>{t('login.sendResetLinkBtn')}</span>
             </button>
           </form>
         )}

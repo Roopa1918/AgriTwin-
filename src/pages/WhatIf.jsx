@@ -1,61 +1,63 @@
-// AgriTwin — What-If Weather Change Simulator (PRD Section 19)
+// AgriTwin — Try Different Weather Simulator (PRD Section 19)
 // "See what could happen if the weather changes."
 
 import React, { useState } from 'react';
 import { useTelemetry } from '../context/TelemetryContext';
+import { useLanguage } from '../context/LanguageContext';
 import { CloudRain, Sun, Flame, Droplets, AlertTriangle, ArrowRight, ShieldAlert, Sparkles } from 'lucide-react';
 
 export default function WhatIf() {
+  const { t } = useLanguage();
   const { liveWeather } = useTelemetry();
   const [selectedScenario, setSelectedScenario] = useState('hotDry');
 
   const scenarios = {
     normal: {
       id: 'normal',
-      title: 'Normal Weather',
+      title: t('whatIf.scenarioNormal'),
       icon: '⛅',
       tempDelta: '0°C',
-      rainDelta: 'Normal',
-      soilWaterEffect: 'Stable',
-      waterNeedEffect: 'Normal',
-      cropEffect: 'Good / Healthy',
-      finding: 'Standard weather conditions. No unusual water stress expected.',
+      rainDelta: t('whatIf.waterNeedNormal') || 'Normal',
+      soilWaterEffect: t('whatIf.effectStable') || 'Stable',
+      waterNeedEffect: t('whatIf.waterNeedNormal') || 'Normal',
+      cropEffect: t('whatIf.cropEffectHealthy') || 'Good / Healthy',
+      finding: t('whatIf.scenarioNormalFinding'),
       alertType: 'good'
     },
     hotter: {
       id: 'hotter',
-      title: 'Hotter Weather',
+      title: t('whatIf.scenarioHotter'),
       icon: '☀️',
       tempDelta: '+2°C',
-      rainDelta: 'Normal',
-      soilWaterEffect: 'Slightly Faster Drying',
-      waterNeedEffect: 'Medium-High',
-      cropEffect: 'May need more frequent checks',
-      finding: 'Warm days will increase evaporation. You may need to water a day earlier.',
+      rainDelta: t('whatIf.waterNeedNormal') || 'Normal',
+      soilWaterEffect: t('whatIf.effectFasterDrying') || 'Faster Drying',
+      waterNeedEffect: t('whatIf.waterNeedMediumHigh') || 'Medium-High',
+      cropEffect: t('whatIf.cropEffectFrequentCheck') || 'May need more frequent checks',
+      finding: t('whatIf.scenarioHotterFinding'),
       alertType: 'warning'
     },
     hotDry: {
       id: 'hotDry',
-      title: 'Hot & Dry',
+      title: t('whatIf.scenarioHotDry'),
       icon: '🔥',
       tempDelta: '+3°C',
       rainDelta: '-20%',
-      soilWaterEffect: 'Decreases Faster',
-      waterNeedEffect: 'High',
-      cropEffect: 'Stress may increase',
-      finding: 'Water need may increase. Soil water may decrease faster, causing crop stress if not watered.',
+      soilWaterEffect: t('whatIf.effectDecreasesFaster') || 'Decreases Faster',
+      waterNeedEffect: t('whatIf.waterNeedHigh') || 'High',
+      cropEffect: t('whatIf.cropEffectStressIncrease') || 'Stress may increase',
+      finding: t('whatIf.scenarioHotDryFinding'),
       alertType: 'danger'
     },
     heavyRain: {
       id: 'heavyRain',
-      title: 'Heavy Rain',
+      title: t('whatIf.scenarioHeavyRain'),
       icon: '⛈️',
       tempDelta: '-2°C',
       rainDelta: '+35 mm',
-      soilWaterEffect: 'Recharged / High',
-      waterNeedEffect: 'None (No watering needed)',
-      cropEffect: 'Plenty of water',
-      finding: 'Heavy rainfall will recharge soil water. Turn off watering to prevent waterlogging.',
+      soilWaterEffect: t('whatIf.effectRecharged') || 'Recharged / High',
+      waterNeedEffect: t('whatIf.waterNeedNone') || 'None (No watering needed)',
+      cropEffect: t('whatIf.cropEffectPlentyWater') || 'Plenty of water',
+      finding: t('whatIf.scenarioHeavyRainFinding'),
       alertType: 'info'
     }
   };
@@ -67,9 +69,9 @@ export default function WhatIf() {
       {/* Header */}
       <div className="page-header">
         <div className="page-header-text">
-          <h1>☁ What-If Weather Changes</h1>
+          <h1>☁ {t('whatIf.title')}</h1>
           <p style={{ fontSize: '1.05rem', color: '#f1f5f9' }}>
-            "See what could happen if the weather changes."
+            {t('whatIf.subtitle')}
           </p>
         </div>
 
@@ -82,14 +84,14 @@ export default function WhatIf() {
           color: '#fbbf24',
           fontWeight: 700
         }}>
-          DEMONSTRATION SCENARIO — NOT A WEATHER FORECAST
+          {t('whatIf.demoScenarioNotice')}
         </span>
       </div>
 
       {/* Large Scenario Buttons (PRD Section 19) */}
       <div>
         <h3 style={{ fontSize: '1.1rem', color: '#fff', marginBottom: '14px' }}>
-          Choose a Weather Condition to Try:
+          {t('whatIf.chooseConditionPrompt')}
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: '12px' }}>
           {Object.values(scenarios).map(sc => {
@@ -134,10 +136,10 @@ export default function WhatIf() {
           <span style={{ fontSize: '2rem' }}>{current.icon}</span>
           <div>
             <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-muted)', fontWeight: 700 }}>
-              WHAT COULD HAPPEN
+              {t('whatIf.whatCouldHappen') || 'WHAT COULD HAPPEN'}
             </span>
             <h2 style={{ fontSize: '1.5rem', color: '#fff' }}>
-              Scenario: {current.title}
+              {t('whatIf.scenarioTitle', { title: current.title }) || `Scenario: ${current.title}`}
             </h2>
           </div>
         </div>
@@ -145,35 +147,39 @@ export default function WhatIf() {
         {/* Changes Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: '12px', marginBottom: '22px' }}>
           <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: 'var(--radius-md)' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Temperature Shift</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+              {t('whatIf.temperatureShift') || 'Temperature Shift'}
+            </span>
             <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#f59e0b', marginTop: '4px' }}>
               {current.tempDelta}
             </div>
           </div>
 
           <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: 'var(--radius-md)' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Rain Amount</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+              {t('whatIf.rainAmount') || 'Rain Amount'}
+            </span>
             <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-water)', marginTop: '4px' }}>
               {current.rainDelta}
             </div>
           </div>
 
           <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: 'var(--radius-md)' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Soil Water Effect</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{t('whatIf.soilWaterEffect')}</span>
             <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', marginTop: '4px' }}>
               {current.soilWaterEffect}
             </div>
           </div>
 
           <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: 'var(--radius-md)' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Water Need</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{t('whatIf.waterNeedEffect')}</span>
             <div style={{ fontSize: '1.2rem', fontWeight: 800, color: (current?.waterNeedEffect ?? '').includes('High') ? '#ef4444' : '#34d399', marginTop: '4px' }}>
               {current.waterNeedEffect}
             </div>
           </div>
 
           <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: 'var(--radius-md)' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Crop Condition</span>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{t('whatIf.cropEffect')}</span>
             <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#fff', marginTop: '4px' }}>
               {current.cropEffect}
             </div>
@@ -190,7 +196,7 @@ export default function WhatIf() {
           color: '#f8fafc',
           lineHeight: 1.5
         }}>
-          <strong>Advice for Farmer: </strong>
+          <strong>{t('whatIf.farmerAdvice') || 'Advice for Farmer: '}</strong>
           "{current.finding}"
         </div>
       </div>

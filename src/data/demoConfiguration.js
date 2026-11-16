@@ -1,18 +1,209 @@
 // AgriTwin — Field, Sensor, and Demonstration Configuration
 
+// Authentic FAO-56 Soil Texture Profiles
+export const SOIL_PROFILES = {
+  sandy_loam: {
+    id: 'sandy_loam',
+    name: 'Sandy Loam',
+    fc: 18.0,            // % VWC Field Capacity (Assumed)
+    pwp: 8.0,            // % VWC Permanent Wilting Point (Assumed)
+    sat: 38.0,           // % VWC Saturation
+    isProvisional: true, // Marked as demonstration assumption
+    description: 'Moderate drainage, low-to-medium water holding capacity'
+  },
+  loam: {
+    id: 'loam',
+    name: 'Loam',
+    fc: 25.0,
+    pwp: 12.0,
+    sat: 43.0,
+    isProvisional: false,
+    description: 'Well-balanced soil with high water holding capacity'
+  },
+  clay_loam: {
+    id: 'clay_loam',
+    name: 'Clay Loam',
+    fc: 32.0,
+    pwp: 18.0,
+    sat: 47.0,
+    isProvisional: false,
+    description: 'Fine texture, slow infiltration, high water retention'
+  },
+  clay: {
+    id: 'clay',
+    name: 'Clay',
+    fc: 38.0,
+    pwp: 22.0,
+    sat: 50.0,
+    isProvisional: false,
+    description: 'Heavy soil, slow infiltration, very high water retention'
+  },
+  sand: {
+    id: 'sand',
+    name: 'Sand',
+    fc: 12.0,
+    pwp: 5.0,
+    sat: 34.0,
+    isProvisional: false,
+    description: 'Coarse texture, rapid drainage, low water holding capacity'
+  }
+};
+
+// Authoritative FAO-56 Table 12 Growth Stages for Demonstration Crop (Tomato)
+// Allen, Pereira, Raes, & Smith (1998), FAO Irrigation and Drainage Paper No. 56, Table 12, p. 110.
+// Fixed effective root depth Zr = 0.50m and allowable depletion fraction p = 0.40 are preserved from Phase 2.
+export const TOMATO_GROWTH_STAGES = {
+  initial: {
+    id: 'initial',
+    name: 'Initial (Transplant / Establishment)',
+    kc: 0.60,
+    rootDepthM: 0.50,
+    depletionFraction: 0.40,
+    durationDays: 30,
+    description: 'Transplant to 10% ground cover. Soil evaporation dominates.',
+    reference: 'FAO-56 Table 12 standard reference'
+  },
+  development: {
+    id: 'development',
+    name: 'Crop Development (Vegetative)',
+    kc: 0.88,
+    rootDepthM: 0.50,
+    depletionFraction: 0.40,
+    durationDays: 40,
+    description: 'Linear midpoint approximation of 0.60 -> 1.15 transition. Rapid canopy expansion.',
+    reference: 'FAO-56 midpoint approximation ((0.60 + 1.15) / 2 = 0.875 ~ 0.88)'
+  },
+  mid: {
+    id: 'mid',
+    name: 'Mid-Season (Flowering & Fruit Set)',
+    kc: 1.15,
+    rootDepthM: 0.50,
+    depletionFraction: 0.40,
+    durationDays: 45,
+    description: 'Unadjusted FAO-56 Table 12 fresh-market reference value. Peak water demand.',
+    reference: 'FAO-56 Table 12 standard reference (fresh market tomato)'
+  },
+  late: {
+    id: 'late',
+    name: 'Late-Season (Maturity & Ripening)',
+    kc: 0.80,
+    rootDepthM: 0.50,
+    depletionFraction: 0.40,
+    durationDays: 25,
+    description: 'Ripening to harvest. Lower transpiration and leaf senescence.',
+    reference: 'FAO-56 Table 12 standard midpoint (0.70 - 0.90)'
+  }
+};
+
+// FAO-56 Crop Agronomic Profiles (Tomato is primary demonstration crop)
+export const CROP_AGRONOMIC_PROFILES = {
+  Tomato: {
+    crop: 'Tomato',
+    rootDepthM: 0.50,        // Effective root depth Zr in meters (Assumed constant)
+    depletionFraction: 0.40, // p (MAD) allowable depletion before water stress (Assumed constant)
+    growthStage: 'Mid-Season (Flowering & Fruit Set)',
+    growthStageId: 'mid',
+    isProvisional: true,
+    kc: 1.15,                // FAO-56 Table 12 unadjusted reference value
+    stages: TOMATO_GROWTH_STAGES
+  },
+  Rice: {
+    crop: 'Rice',
+    rootDepthM: 0.35,
+    depletionFraction: 0.20,
+    growthStage: 'Vegetative',
+    isProvisional: true,
+    kc: 1.15
+  },
+  Wheat: {
+    crop: 'Wheat',
+    rootDepthM: 0.60,
+    depletionFraction: 0.55,
+    growthStage: 'Booting / Grain Fill',
+    isProvisional: true,
+    kc: 1.10
+  },
+  Cotton: {
+    crop: 'Cotton',
+    rootDepthM: 0.75,
+    depletionFraction: 0.65,
+    growthStage: 'Boll Formation',
+    isProvisional: true,
+    kc: 1.15
+  },
+  Maize: {
+    crop: 'Maize',
+    rootDepthM: 0.65,
+    depletionFraction: 0.50,
+    growthStage: 'Tasseling',
+    isProvisional: true,
+    kc: 1.15
+  },
+  Potato: {
+    crop: 'Potato',
+    rootDepthM: 0.40,
+    depletionFraction: 0.35,
+    growthStage: 'Tuber Bulking',
+    isProvisional: true,
+    kc: 1.10
+  },
+  Groundnut: {
+    crop: 'Groundnut',
+    rootDepthM: 0.50,
+    depletionFraction: 0.50,
+    growthStage: 'Pegging / Pod Formation',
+    isProvisional: true,
+    kc: 1.00
+  },
+  Sugarcane: {
+    crop: 'Sugarcane',
+    rootDepthM: 1.00,
+    depletionFraction: 0.65,
+    growthStage: 'Grand Growth',
+    isProvisional: true,
+    kc: 1.25
+  },
+  Pulses: {
+    crop: 'Pulses',
+    rootDepthM: 0.45,
+    depletionFraction: 0.45,
+    growthStage: 'Pod Development',
+    isProvisional: true,
+    kc: 1.05
+  },
+  Vegetables: {
+    crop: 'Vegetables',
+    rootDepthM: 0.35,
+    depletionFraction: 0.35,
+    growthStage: 'Vegetative',
+    isProvisional: true,
+    kc: 1.00
+  },
+  Other: {
+    crop: 'Other',
+    rootDepthM: 0.50,
+    depletionFraction: 0.45,
+    growthStage: 'General',
+    isProvisional: true,
+    kc: 1.00
+  }
+};
+
 export const INITIAL_FIELD_CONFIG = {
   id: 'demoField',
-  name: 'Demonstration Farm Field',
+  name: 'My Tomato Field',
   institution: 'Smart Agriculture Research',
   location: 'Precision Ag Plot — Sector 4',
   latitude: 13.0827,
   longitude: 80.2707,
-  area: '4.5 Hectares',
-  crop: 'Maize (Zea mays)',
-  cropVariety: 'Hybrid Ganga-5',
+  area: '2.5 Acres (1.0 Ha)',
+  crop: 'Tomato',
+  cropVariety: 'Hybrid Pusa Ruby',
   sowingDate: '2026-06-15',
-  growthStage: 'V6 (Vegetative / Knee-high)',
-  soilType: 'Clay Loam (Field Capacity: 38%, Wilting Point: 18%)',
+  growthStage: 'Mid-Season / Flowering',
+  soilType: 'sandy_loam',
+  soilIsProvisional: true,
+  pumpDischargeLph: null,
   irrigationType: 'Precision Micro-Sprinkler & Drip Array',
   numberOfZones: 4,
   boundaryPolygon: [
@@ -28,15 +219,15 @@ export const INITIAL_ZONES = [
     id: 'zone1',
     name: 'Zone 1 — North-West',
     shortName: 'Zone 1',
-    area: '1.1 ha',
+    area: '0.6 ha',
     sensorId: 'SM-Z01',
-    moisture: 42.4,
+    moisture: 17.8, // Near Field Capacity (18.0% FC)
     temperature: 28.6,
     humidity: 58.2,
     pH: 6.8,
     ec: 1.2,
     rainfall: 0,
-    health: 91,
+    health: 92,
     waterStress: 'Low',
     irrigationNeeded: false,
     irrigationPriority: 'LOW',
@@ -48,19 +239,19 @@ export const INITIAL_ZONES = [
     id: 'zone2',
     name: 'Zone 2 — North-East (Demo Target)',
     shortName: 'Zone 2',
-    area: '1.2 ha',
+    area: '0.6 ha',
     sensorId: 'SM-Z02',
-    moisture: 41.8, // starts healthy, will decline during demo
+    moisture: 13.8, // Starts below refill threshold (14.0%) to demonstrate water need
     temperature: 28.8,
     humidity: 57.5,
     pH: 6.7,
     ec: 1.3,
     rainfall: 0,
-    health: 88,
-    waterStress: 'Low',
-    irrigationNeeded: false,
-    irrigationPriority: 'LOW',
-    status: 'GOOD',
+    health: 78,
+    waterStress: 'High',
+    irrigationNeeded: true,
+    irrigationPriority: 'HIGH',
+    status: 'LOW',
     coords: { x: 3.2, z: -3.2 },
     latLng: [13.0831, 80.2713]
   },
@@ -68,19 +259,19 @@ export const INITIAL_ZONES = [
     id: 'zone3',
     name: 'Zone 3 — South-West',
     shortName: 'Zone 3',
-    area: '1.1 ha',
+    area: '0.6 ha',
     sensorId: 'SM-Z03',
-    moisture: 38.6,
+    moisture: 16.2, // Adequate (In RAW zone between 14.0% and 18.0%)
     temperature: 29.1,
     humidity: 56.4,
     pH: 6.6,
     ec: 1.1,
     rainfall: 0,
-    health: 84,
-    waterStress: 'Moderate',
+    health: 86,
+    waterStress: 'Low',
     irrigationNeeded: false,
-    irrigationPriority: 'MEDIUM',
-    status: 'MODERATE',
+    irrigationPriority: 'LOW',
+    status: 'GOOD',
     coords: { x: -3.2, z: 3.2 },
     latLng: [13.0822, 80.2703]
   },
@@ -88,15 +279,15 @@ export const INITIAL_ZONES = [
     id: 'zone4',
     name: 'Zone 4 — South-East',
     shortName: 'Zone 4',
-    area: '1.1 ha',
+    area: '0.7 ha',
     sensorId: 'SM-Z04',
-    moisture: 45.2,
+    moisture: 18.0, // At Field Capacity (18.0% FC)
     temperature: 28.3,
     humidity: 60.1,
     pH: 6.9,
     ec: 1.2,
     rainfall: 0,
-    health: 94,
+    health: 95,
     waterStress: 'Low',
     irrigationNeeded: false,
     irrigationPriority: 'LOW',
@@ -115,7 +306,7 @@ export const INITIAL_SENSORS = [
     parameter: 'Volumetric Water Content',
     zoneId: 'zone1',
     zoneName: 'Zone 1',
-    value: 42.4,
+    value: 17.8,
     unit: '%',
     status: 'Online',
     battery: 98,
@@ -130,7 +321,7 @@ export const INITIAL_SENSORS = [
     parameter: 'Volumetric Water Content',
     zoneId: 'zone2',
     zoneName: 'Zone 2',
-    value: 41.8,
+    value: 13.8,
     unit: '%',
     status: 'Online',
     battery: 95,
@@ -145,7 +336,7 @@ export const INITIAL_SENSORS = [
     parameter: 'Volumetric Water Content',
     zoneId: 'zone3',
     zoneName: 'Zone 3',
-    value: 38.6,
+    value: 16.2,
     unit: '%',
     status: 'Online',
     battery: 92,
@@ -160,7 +351,7 @@ export const INITIAL_SENSORS = [
     parameter: 'Volumetric Water Content',
     zoneId: 'zone4',
     zoneName: 'Zone 4',
-    value: 45.2,
+    value: 18.2,
     unit: '%',
     status: 'Online',
     battery: 96,

@@ -1,0 +1,24 @@
+
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="../dist/assets/index-B50v-KXJ.css">
+</head>
+<body>
+  <div class="header-mobile app-header">
+    <div class="mobile-header-brand">
+      <span class="mobile-header-logo">🌱</span>
+      <span class="mobile-header-title">AgriTwin</span>
+      <button class="mobile-header-field-chip"><span>🌾</span><span>Field</span></button>
+    </div>
+  </div>
+  <div id="result"></div>
+  <script>
+    window.onload = () => {
+      const chip = document.querySelector('.mobile-header-field-chip');
+      const style = window.getComputedStyle(chip);
+      document.getElementById('result').innerText = 'DISPLAY:' + style.display + ' WIDTH:' + window.innerWidth;
+    };
+  </script>
+</body>
+</html>
