@@ -827,10 +827,6 @@ h1, h2, h3, h4, h5, h6 {
   display: none !important;
 }
 
-.mobile-more-overlay {
-  display: none !important;
-}
-
 .main-content-scroll {
   flex: 1;
   padding-bottom: 36px;
@@ -1012,7 +1008,7 @@ h1, h2, h3, h4, h5, h6 {
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  z-index: 1000;
+  z-index: 1100;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -1189,8 +1185,20 @@ h1, h2, h3, h4, h5, h6 {
   }
   .header-mobile {
     display: flex !important;
-    height: 58px;
-    padding: 0 16px;
+    height: auto;
+    min-height: 58px;
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding: 8px 12px;
+  }
+  .mobile-header-brand {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+  .mobile-header-actions {
+    width: 100%;
+    justify-content: flex-end;
   }
   .mobile-bottom-nav {
     display: flex !important;
@@ -1303,15 +1311,10 @@ h1, h2, h3, h4, h5, h6 {
     gap: 12px !important;
   }
 
-  .header-mobile {
-    padding: 0 8px !important;
-    gap: 6px !important;
-  }
-
   .mobile-header-brand {
     gap: 6px !important;
     min-width: 0;
-    flex-shrink: 1;
+    flex-wrap: wrap;
   }
 
   .mobile-header-title {
@@ -1319,7 +1322,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .mobile-header-field-chip {
-    max-width: 85px !important;
+    max-width: min(180px, calc(100vw - 125px)) !important;
     padding: 2px 6px !important;
     font-size: 0.7rem !important;
   }
@@ -1351,11 +1354,6 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 360px) {
   /* Compact & Ultra-Narrow Phones (320px - 360px) */
-  /* Hide the header field chip so brand logo, title, language selector, bell, and menu drawer fit comfortably without overflow */
-  .mobile-header-field-chip {
-    display: none !important;
-  }
-
   .mobile-header-title {
     display: inline-block !important;
     font-size: 1rem !important;
