@@ -267,15 +267,9 @@ export default function HomeDashboard({ setTab }) {
               {t('home.waterUnavailableDesc') || 'Soil moisture or field data is missing. A reliable watering recommendation cannot be calculated safely.'}
             </p>
           ) : isWaterLow ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <p style={{ fontSize: '0.98rem', color: '#f1f5f9', margin: 0, lineHeight: 1.5 }}>
-                {t('home.waterNeededShortDesc', { zone: targetZoneName }) || `Soil moisture in ${targetZoneName} is below the watering level. Watering is recommended today to protect crop health.`}
-              </p>
-              <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: '6px', fontSize: '0.9rem', color: '#fca5a5', fontWeight: 800, wordBreak: 'break-word' }}>
-                <span>📍</span>
-                <span>{t('home.affectedPlot') || 'Affected Field Zone'}: {targetZoneName} ({targetAreaText})</span>
-              </div>
-            </div>
+            <p style={{ fontSize: '0.98rem', color: '#f1f5f9', margin: 0, lineHeight: 1.5 }}>
+              {t('home.waterNeededShortDesc', { zone: targetZoneName }) || `Soil moisture in ${targetZoneName} is below the watering level. Watering is recommended today to protect crop health.`}
+            </p>
           ) : (
             <p style={{ fontSize: '0.98rem', color: '#f1f5f9', margin: 0, lineHeight: 1.5 }}>
               {t('home.waterNotNeededDesc') || 'Soil moisture across your field is adequate. Your crops have sufficient water in the root zone.'}
@@ -339,10 +333,6 @@ export default function HomeDashboard({ setTab }) {
             paddingTop: '6px',
             borderTop: '1px solid rgba(255,255,255,0.06)'
           }}>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
-              🟡 {t('home.dataHonestySimulated') || 'Soil moisture is simulated for demonstration. Live weather is from Open-Meteo.'}
-            </div>
-
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
               {/* Optional Demo Watering Simulator Button */}
               {isWaterLow && (
@@ -351,10 +341,9 @@ export default function HomeDashboard({ setTab }) {
                   onClick={waterZone2}
                   className="btn btn-water btn-sm"
                   style={{ minHeight: '42px', fontWeight: 700, padding: '8px 16px' }}
-                  title="Simulate virtual watering for Zone 2"
                 >
                   <Droplets size={16} />
-                  <span>{isIrrigatingZone2 ? (t('home.wateringActive') || 'Watering Active...') : (t('home.simulateWatering') || 'Simulate Watering')}</span>
+                  <span>{isIrrigatingZone2 ? (t('home.wateringActive') || 'Watering Active...') : (t('home.simulateWatering') || 'What if I water?')}</span>
                 </button>
               )}
 

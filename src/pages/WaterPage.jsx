@@ -102,7 +102,7 @@ export default function WaterPage() {
             style={{ fontWeight: 700, padding: '10px 20px', minHeight: '44px' }}
           >
             <Droplets size={17} />
-            <span>{isIrrigatingZone2 ? (t('home.wateringActive') || 'Watering Active...') : (t('water.simulateWateringBtn') || 'Simulate Watering')}</span>
+            <span>{isIrrigatingZone2 ? (t('home.wateringActive') || 'Watering Active...') : (t('water.simulateWateringBtn') || 'What if I water?')}</span>
           </button>
         )}
       </div>
