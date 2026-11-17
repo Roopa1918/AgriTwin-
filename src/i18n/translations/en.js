@@ -320,7 +320,7 @@ export default {
     "waterStorageStressCapacities": "Water Storage & Stress Capacities:",
     "scenarioA": "Scenario A (Rain {rain} mm):",
     "scenarioB": "Scenario B (Zero Rain):",
-    "scenarioComparison": "5-Day Scenario Comparison (Forecast-Rain vs. Dry Baseline)",
+    "scenarioComparison": "3-Day Scenario Comparison (Forecast-Rain vs. Dry Baseline)",
     "offlineNotice": "Weather forecast is offline. Multi-day rain scenarios are paused. Operating in in-situ moisture mode.",
     "soilConstants": "Soil Constants"
   },

@@ -35,12 +35,8 @@ export default function WaterPage() {
   // Target Zone Details
   const targetZone = scientificRecommendation?.mostStressedZone || zones?.find(z => z.id === 'zone2') || zones?.[1];
   const targetZoneName = isNeedsWater 
-    ? (targetZone?.shortName || targetZone?.name || 'Zone 2 (Zone B)') 
+    ? (targetZone?.shortName || targetZone?.name?.split(' (')[0] || 'Zone B')
     : (t('water.allZonesHydrated') || 'All 4 Field Zones are adequately hydrated');
-
-  const targetAreaText = isNeedsWater 
-    ? (scientificRecommendation?.targetAreaText || '0.63 Acre Plot') 
-    : (activeField?.area || '2.5 Acres');
 
   // Soil-specific parameters (respects active soil profile, never a universal threshold)
   const fc = activeSoil?.fc || 18.0;
@@ -202,44 +198,7 @@ export default function WaterPage() {
                 📍 {t('water.whichZoneNeedsWater') || 'Which zone needs water?'}
               </div>
               <div style={{ fontSize: '1.05rem', fontWeight: 800, color: isNeedsWater ? '#fca5a5' : 'var(--emerald-300)', marginTop: '2px' }}>
-                {targetZoneName} {isNeedsWater ? `(${targetAreaText})` : ''}
-              </div>
-            </div>
-
-            {/* Question 3: Why watering is recommended & What action to take */}
-            <div style={{
-              background: 'rgba(0,0,0,0.3)',
-              padding: '16px 18px',
-              borderRadius: 'var(--radius-lg)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px'
-            }}>
-              <div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-                  Reason:
-                </span>{' '}
-                <span style={{ fontSize: '0.94rem', color: '#f1f5f9' }}>
-                  {isDataUnavailable
-                    ? 'Field or sensor data is missing. Please select an active field or check connection.'
-                    : isNeedsWater
-                    ? t('water.wateringNeededReason', { zone: targetZoneName }) || `Soil moisture in ${targetZoneName} is below the refill point. Crop roots are drawing on limited moisture reserves.`
-                    : t('water.noWateringNeededReason') || 'Soil moisture across all field zones is in the healthy range. Your crop has sufficient water in the root zone.'}
-                </span>
-              </div>
-
-              <div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>
-                  👉 {t('water.whatShouldIDo') || 'What should I do?'}
-                </div>
-                <div style={{ fontSize: '1.02rem', fontWeight: 800, color: isNeedsWater ? '#f87171' : 'var(--emerald-300)', marginTop: '2px' }}>
-                  {isDataUnavailable
-                    ? 'Check field setup and sensor readings before irrigating.'
-                    : isNeedsWater
-                    ? t('water.wateringNeededAction', { zone: targetZoneName }) || `Turn on irrigation for ${targetZoneName} today to restore healthy soil moisture.`
-                    : t('water.noWateringNeededAction') || 'Keep irrigation pumps OFF today. Recheck soil moisture tomorrow morning.'}
-                </div>
+                {targetZoneName}
               </div>
             </div>
           </div>
@@ -453,7 +412,7 @@ export default function WaterPage() {
             {scientificRecommendation?.irrigationOutlook?.forecastRainScenario?.length > 0 && (
               <div>
                 <h4 style={{ fontSize: '0.86rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 800, margin: '10px 0 10px' }}>
-                  📅 {t('water.scenarioComparison') || '5-Day Scenario Comparison (Forecast-Rain vs. Dry Baseline)'}
+                  📅 {t('water.scenarioComparison') || '3-Day Scenario Comparison (Forecast-Rain vs. Dry Baseline)'}
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '12px' }}>
                   {scientificRecommendation.irrigationOutlook.forecastRainScenario.slice(0, 3).map((day, idx) => {
