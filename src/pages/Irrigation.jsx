@@ -134,7 +134,7 @@ export default function Irrigation({ setTab }) {
 
                     <td style={{ padding: '16px 16px' }}>
                       <strong style={{ fontSize: '1.1rem', color: isLow ? '#f87171' : '#fff' }}>
-                        {zone.moisture?.toFixed(1)}%
+                        {Math.round(zone.moisture)}%
                       </strong>
                       <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'block' }}>VWC</span>
                     </td>

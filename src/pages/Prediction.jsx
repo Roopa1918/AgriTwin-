@@ -82,7 +82,7 @@ export default function Prediction({ setTab }) {
           <span className="metric-card-label">Current Zone 2 Moisture</span>
           <div className="metric-card-value-row" style={{ marginTop: '6px' }}>
             <span className="metric-card-value" style={{ color: z2Moisture < 25 ? '#f87171' : '#fff' }}>
-              {z2Moisture.toFixed(1)}
+              {Math.round(z2Moisture)}
             </span>
             <span className="metric-card-unit">%</span>
           </div>

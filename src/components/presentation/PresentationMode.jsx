@@ -131,7 +131,7 @@ export default function PresentationMode() {
                 </span>
               </div>
               <div style={{ fontSize: '2.5rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-heading)', lineHeight: 1 }}>
-                {z2Moisture.toFixed(1)}<span style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>%</span>
+                {Math.round(z2Moisture)}<span style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>%</span>
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '6px' }}>
                 Sensor: <strong>SM-Z02</strong> &bull; Decagon 10HS

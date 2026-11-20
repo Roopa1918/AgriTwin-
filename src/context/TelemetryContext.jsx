@@ -58,7 +58,7 @@ export function TelemetryProvider({ children }) {
   const [historyBuffer, setHistoryBuffer] = useState({
     times: ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00'],
     zone1: [18.0, 17.9, 17.8, 17.7, 17.8, 17.8, 17.8],
-    zone2: [17.5, 16.8, 15.6, 14.8, 14.1, 13.8, 13.5],
+    zone2: [17, 17, 16, 15, 14, 12, 12],
     zone3: [16.8, 16.6, 16.4, 16.3, 16.2, 16.2, 16.2],
     zone4: [18.0, 18.0, 18.0, 17.9, 18.0, 18.0, 18.0],
     temperatures: [24, 26, 28, 30, 31, 29, 27],
@@ -181,11 +181,11 @@ export function TelemetryProvider({ children }) {
 
   // Derived Aggregate Values for Home Dashboard & Reports (Deliberate half-up rounding: 16.45% -> 16.5%)
   const avgSoilWater = zones.length > 0
-    ? (Math.round(((zones.reduce((sum, z) => sum + (z.soilWater || 0), 0) / zones.length) + Number.EPSILON) * 10) / 10).toFixed(1)
-    : '16.5';
+    ? String(Math.round(zones.reduce((sum, z) => sum + (z.soilWater || 0), 0) / zones.length))
+    : '17';
 
   const z2 = zones.find(z => z.id === 'zone2') || zones[1] || zones[0];
-  const z2Water = z2?.soilWater ?? 13.8;
+  const z2Water = z2?.soilWater ?? 12;
 
   // Single Central Scientific Recommendation Engine (Requirement D: No conflicting advice)
   const scientificRecommendation = evaluateFieldIrrigation({

@@ -25,13 +25,13 @@ export default function RawSensorData() {
   // Create live simulated rows
   const z2Val = zones[1]?.soilWater ?? 13.5;
   const streamRows = [
-    { time: '14:32:01', sensor: 'SM-Z02', zone: 'Zone 2', reading: t('fieldMonitor.soilWaterContent'), value: `${(z2Val + 0.3).toFixed(1)}%` },
-    { time: '14:32:04', sensor: 'SM-Z02', zone: 'Zone 2', reading: t('fieldMonitor.soilWaterContent'), value: `${z2Val.toFixed(1)}%` },
+    { time: '14:32:01', sensor: 'SM-Z02', zone: 'Zone 2', reading: t('fieldMonitor.soilWaterContent'), value: `${Math.round(z2Val + 0.3)}%` },
+    { time: '14:32:04', sensor: 'SM-Z02', zone: 'Zone 2', reading: t('fieldMonitor.soilWaterContent'), value: `${Math.round(z2Val)}%` },
     { time: '14:32:07', sensor: 'TEMP-01', zone: 'Field', reading: t('weather.temperature'), value: `${liveWeather.temperature}°C` },
     { time: '14:32:10', sensor: 'HUM-01', zone: 'Field', reading: t('weather.humidity'), value: `${liveWeather.humidity}%` },
-    { time: '14:32:13', sensor: 'SM-Z01', zone: 'Zone 1', reading: t('fieldMonitor.soilWaterContent'), value: `${zones[0]?.soilWater?.toFixed(1) || '17.8'}%` },
-    { time: '14:32:16', sensor: 'SM-Z03', zone: 'Zone 3', reading: t('fieldMonitor.soilWaterContent'), value: `${zones[2]?.soilWater?.toFixed(1) || '16.2'}%` },
-    { time: '14:32:19', sensor: 'SM-Z04', zone: 'Zone 4', reading: t('fieldMonitor.soilWaterContent'), value: `${zones[3]?.soilWater?.toFixed(1) || '18.0'}%` }
+    { time: '14:32:13', sensor: 'SM-Z01', zone: 'Zone 1', reading: t('fieldMonitor.soilWaterContent'), value: `${Math.round(zones[0]?.soilWater ?? 17.8)}%` },
+    { time: '14:32:16', sensor: 'SM-Z03', zone: 'Zone 3', reading: t('fieldMonitor.soilWaterContent'), value: `${Math.round(zones[2]?.soilWater ?? 16.2)}%` },
+    { time: '14:32:19', sensor: 'SM-Z04', zone: 'Zone 4', reading: t('fieldMonitor.soilWaterContent'), value: `${Math.round(zones[3]?.soilWater ?? 18.0)}%` }
   ];
 
   return (

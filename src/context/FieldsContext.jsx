@@ -38,7 +38,11 @@ export function FieldsProvider({ children }) {
                 const val = typeof z === 'number' ? z : (typeof z?.soilWater === 'number' ? z.soilWater : (z?.moisture ?? null));
                 return val === null || val > soil.fc || val < soil.pwp;
               });
-            const zones = isOutOfBounds ? getBaselineZonesForSoil(soil.id) : f.zones;
+            const zones = isOutOfBounds
+              ? getBaselineZonesForSoil(soil.id)
+              : f.zones.map(zone => zone?.id === 'zone2' && (zone.soilWater === 13.8 || zone.moisture === 13.8)
+                ? { ...zone, ...(typeof zone.soilWater === 'number' ? { soilWater: 12 } : {}), ...(typeof zone.moisture === 'number' ? { moisture: 12 } : {}) }
+                : zone);
 
             return {
               ...f,
@@ -121,7 +125,7 @@ export function FieldsProvider({ children }) {
       updatedAt: new Date().toISOString(),
       zones: [
         { id: 'zone1', name: 'Zone A (North-West)', shortName: 'Zone A', soilWater: 17.8, status: 'Good', sensorId: 'SM-Z01' },
-        { id: 'zone2', name: 'Zone B (North-East - Target)', shortName: 'Zone B', soilWater: 13.8, status: 'Needs Water', sensorId: 'SM-Z02' },
+        { id: 'zone2', name: 'Zone B (North-East - Target)', shortName: 'Zone B', soilWater: 12, status: 'Needs Water', sensorId: 'SM-Z02' },
         { id: 'zone3', name: 'Zone C (South-West)', shortName: 'Zone C', soilWater: 16.2, status: 'Good', sensorId: 'SM-Z03' },
         { id: 'zone4', name: 'Zone D (South-East)', shortName: 'Zone D', soilWater: 18.0, status: 'Good', sensorId: 'SM-Z04' }
       ]
@@ -162,7 +166,7 @@ export function FieldsProvider({ children }) {
       ],
       zones: [
         { id: 'zone1', name: 'Zone A (North-West)', shortName: 'Zone A', soilWater: 17.8, status: 'Good', sensorId: 'SM-Z01' },
-        { id: 'zone2', name: 'Zone B (North-East - Target)', shortName: 'Zone B', soilWater: 13.8, status: 'Needs Water', sensorId: 'SM-Z02' },
+        { id: 'zone2', name: 'Zone B (North-East - Target)', shortName: 'Zone B', soilWater: 12, status: 'Needs Water', sensorId: 'SM-Z02' },
         { id: 'zone3', name: 'Zone C (South-West)', shortName: 'Zone C', soilWater: 16.2, status: 'Good', sensorId: 'SM-Z03' },
         { id: 'zone4', name: 'Zone D (South-East)', shortName: 'Zone D', soilWater: 18.0, status: 'Good', sensorId: 'SM-Z04' }
       ]

@@ -147,7 +147,7 @@ export default function FieldReport() {
                     <td style={{ padding: '10px 4px', fontWeight: 600, color: '#fff' }}>{z.name}</td>
                     <td style={{ padding: '10px 4px', color: 'var(--emerald-400)' }}>{z.sensorId}</td>
                     <td style={{ padding: '10px 4px', fontWeight: 700, color: z.moisture < 25 ? '#f87171' : '#fff' }}>
-                      {z.moisture?.toFixed(1)}%
+                      {Math.round(z.moisture)}%
                     </td>
                     <td style={{ padding: '10px 4px' }}>{z.status}</td>
                     <td style={{ padding: '10px 4px' }}>{z.health}%</td>

@@ -126,7 +126,7 @@ export default function CropHealth({ setTab }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.8rem', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--text-dim)' }}>Soil Water Availability:</span>
-                  <strong style={{ color: zone.moisture < 25 ? '#f87171' : '#fff' }}>{zone.moisture?.toFixed(1)}% VWC</strong>
+                  <strong style={{ color: zone.moisture < 25 ? '#f87171' : '#fff' }}>{Math.round(zone.moisture)}% VWC</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--text-dim)' }}>Leaf Rolling / Wilting Risk:</span>

@@ -54,7 +54,7 @@ export default function ZoneDetailDrawer({ zoneId, onClose }) {
         <div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>{t('zoneDrawer.soilWater')}</div>
           <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff', fontFamily: 'var(--font-heading)' }}>
-            {moisture.toFixed(1)}<span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>% VWC</span>
+            {Math.round(moisture)}<span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>% VWC</span>
           </div>
         </div>
         <span className={`status-pill ${isCritical ? 'low' : isModerate ? 'moderate' : 'good'}`}>
@@ -129,10 +129,10 @@ export default function ZoneDetailDrawer({ zoneId, onClose }) {
         </div>
         <p style={{ color: '#fff', marginBottom: '6px' }}>
           {isCritical 
-            ? t('zoneDrawer.moistureLowNotice', { moisture: moisture.toFixed(1), refillThreshold })
+            ? t('zoneDrawer.moistureLowNotice', { moisture: Math.round(moisture), refillThreshold: Math.round(refillThreshold) })
             : isModerate
-            ? t('zoneDrawer.moistureWatchNotice', { moisture: moisture.toFixed(1) })
-            : t('zoneDrawer.moistureOptimalNotice', { moisture: moisture.toFixed(1) })
+            ? t('zoneDrawer.moistureWatchNotice', { moisture: Math.round(moisture) })
+            : t('zoneDrawer.moistureOptimalNotice', { moisture: Math.round(moisture) })
           }
         </p>
         <p style={{ color: 'var(--text-dim)', fontSize: '0.74rem', margin: 0 }}>

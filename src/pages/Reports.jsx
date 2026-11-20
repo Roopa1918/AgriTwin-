@@ -100,7 +100,7 @@ export default function Reports() {
                 <div key={z.id} style={{ background: 'rgba(0,0,0,0.3)', padding: '14px', borderRadius: 'var(--radius-md)' }}>
                   <strong style={{ color: '#fff', display: 'block', fontSize: '0.9rem' }}>{z.name}</strong>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: isLow ? '#f87171' : '#fff', margin: '4px 0' }}>
-                    {z.soilWater?.toFixed(1)}%
+                    {Math.round(z.soilWater)}%
                   </div>
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, color: isLow ? '#f87171' : isWatch ? '#fbbf24' : '#34d399' }}>
                     {isLow ? t('fieldMonitor.statusNeedsWater') : isWatch ? t('fieldMonitor.statusWatch') : t('fieldMonitor.statusGood')}

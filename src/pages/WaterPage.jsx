@@ -321,7 +321,7 @@ export default function WaterPage() {
                   {/* Soil Moisture Reading */}
                   <div style={{ margin: '2px 0' }}>
                     <div style={{ fontSize: 'clamp(1.5rem, 4vw, 1.85rem)', fontWeight: 900, color: '#fff', lineHeight: 1 }}>
-                      {isUnavailable ? (t('common.unavailable') || 'Unavailable') : `${moisture.toFixed(1)}%`}
+                      {isUnavailable ? (t('common.unavailable') || 'Unavailable') : `${Math.round(moisture)}%`}
                     </div>
                   </div>
 
@@ -431,10 +431,10 @@ export default function WaterPage() {
                           <span style={{ color: 'var(--emerald-400)' }}>ET0: {day.et0} mm</span>
                         </div>
                         <div>
-                          🌧️ <strong>{t('water.scenarioA', { rain: day.rain }) || `Scenario A (Rain ${day.rain} mm):`}</strong> End Dr = {day.endingDr?.toFixed(1)} mm ({day.endingMoisture?.toFixed(1)}%)
+                          🌧️ <strong>{t('water.scenarioA', { rain: day.rain }) || `Scenario A (Rain ${day.rain} mm):`}</strong> End Dr = {day.endingDr?.toFixed(1)} mm ({Math.round(day.endingMoisture)}%)
                         </div>
                         <div style={{ marginTop: '4px' }}>
-                          ☀️ <strong>{t('water.scenarioB') || 'Scenario B (Zero Rain):'}</strong> End Dr = {dryDay.endingDr?.toFixed(1)} mm ({dryDay.endingMoisture?.toFixed(1)}%)
+                          ☀️ <strong>{t('water.scenarioB') || 'Scenario B (Zero Rain):'}</strong> End Dr = {dryDay.endingDr?.toFixed(1)} mm ({Math.round(dryDay.endingMoisture)}%)
                         </div>
                       </div>
                     );

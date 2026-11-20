@@ -241,7 +241,7 @@ export const INITIAL_ZONES = [
     shortName: 'Zone 2',
     area: '0.6 ha',
     sensorId: 'SM-Z02',
-    moisture: 13.8, // Starts below refill threshold (14.0%) to demonstrate water need
+    moisture: 12, // Starts below refill threshold (14.0%) to demonstrate water need
     temperature: 28.8,
     humidity: 57.5,
     pH: 6.7,
@@ -321,7 +321,7 @@ export const INITIAL_SENSORS = [
     parameter: 'Volumetric Water Content',
     zoneId: 'zone2',
     zoneName: 'Zone 2',
-    value: 13.8,
+    value: 12,
     unit: '%',
     status: 'Online',
     battery: 95,

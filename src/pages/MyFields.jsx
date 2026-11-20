@@ -293,7 +293,7 @@ export default function MyFields({ setTab, onOpenAddField }) {
                       • <strong>{t('myFields.gpsCoordinates') || 'GPS:'}</strong> {field.latitude?.toFixed(3)}°N, {field.longitude?.toFixed(3)}°E
                     </div>
                     <div>
-                      • <strong>{t('myFields.zoneMoisture') || 'Zone Moisture:'}</strong> {candidateZones.map((z, idx) => `Z${idx + 1}: ${(z.soilWater || 16).toFixed(1)}%`).join(' | ')}
+                      • <strong>{t('myFields.zoneMoisture') || 'Zone Moisture:'}</strong> {candidateZones.map((z, idx) => `Z${idx + 1}: ${Math.round(z.soilWater || 16)}%`).join(' | ')}
                     </div>
                   </div>
                 </details>

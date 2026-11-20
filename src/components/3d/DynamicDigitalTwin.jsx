@@ -352,7 +352,7 @@ export default function DynamicDigitalTwin({ height = 540 }) {
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', fontWeight: 700, color: '#fff' }}>
                     <span>{z.name}</span>
-                    <span style={{ color: isZoneLow ? '#f87171' : isZoneWatch ? '#fbbf24' : 'var(--emerald-400)' }}>{z.soilWater?.toFixed(1)}%</span>
+                    <span style={{ color: isZoneLow ? '#f87171' : isZoneWatch ? '#fbbf24' : 'var(--emerald-400)' }}>{Math.round(z.soilWater)}%</span>
                   </div>
                   <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px', marginTop: '8px', overflow: 'hidden' }}>
                     <div style={{ width: `${Math.min(100, Math.max(0, ((z.soilWater - pwp) / (fc - pwp)) * 100))}%`, height: '100%', background: isZoneLow ? '#ef4444' : isZoneWatch ? '#f59e0b' : '#10b981', borderRadius: '3px' }} />

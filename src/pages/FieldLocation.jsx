@@ -85,7 +85,7 @@ export default function FieldLocation({ setTab }) {
 
         zoneMarker.bindPopup(`
           <strong>${z.name}</strong><br/>
-          Moisture: ${z.moisture?.toFixed(1)}%<br/>
+          Moisture: ${Math.round(z.moisture)}%<br/>
           Probe: ${z.sensorId}
         `);
       }

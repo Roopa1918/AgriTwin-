@@ -313,7 +313,7 @@ export function generateIrrigationOutlook({
 
   // Anchor Day 0 directly to in-situ telemetry of the target / lowest zone driving irrigation recommendations
   const targetZone = providedTargetZone || zones.find(z => z.id === 'zone2') || [...zones].sort((a, b) => (a.soilWater ?? 16) - (b.soilWater ?? 16))[0] || zones[0];
-  const initialMoisture = targetZone?.balance?.currentMoisture ?? (typeof targetZone?.soilWater === 'number' ? targetZone.soilWater : (targetZone?.moisture ?? 13.8));
+  const initialMoisture = targetZone?.balance?.currentMoisture ?? (typeof targetZone?.soilWater === 'number' ? targetZone.soilWater : (targetZone?.moisture ?? 12));
   const initialDepletion = targetZone?.balance?.depletionMm ?? parseFloat(Math.max(0, Math.min(tawMm, 1000 * ((fc - initialMoisture) / 100) * zr)).toFixed(1));
   const anchorZoneName = targetZone?.shortName || targetZone?.name || 'Zone B (Zone 2)';
 
@@ -615,11 +615,11 @@ export function evaluateFieldIrrigation({
     title = isWholeFieldStressed
       ? 'Water Needed: Whole Field (Rain Forecast Tomorrow)'
       : `Water Needed: ${targetZoneName} (Rain Forecast Tomorrow)`;
-    text = `Soil moisture in ${targetZoneName} is ${targetZone.balance.currentMoisture}%. Weather models project a ${tomorrowForecast.precipitationProbability}% chance of ~${tomorrowForecast.rain} mm rain tomorrow.`;
+    text = `Soil moisture in ${targetZoneName} is ${Math.round(targetZone.balance.currentMoisture)}%. Weather models project a ${tomorrowForecast.precipitationProbability}% chance of ~${tomorrowForecast.rain} mm rain tomorrow.`;
     reason = `Root-zone depletion is ${targetZone.balance.depletionMm} mm (${volText} net requirement). If incoming rain confirms, irrigation may be postponed 12–24h to conserve water; if rain fails by tomorrow morning, irrigate immediately.`;
     action = `Apply ${depthText} (${volText} for ${targetAreaText})${runtimeText} if clear skies persist; postpone 12–24h if incoming rain is confirmed.`;
     adviceStatus = 'Water Needed • Rain Forecast Tomorrow';
-    adviceReason = `Zone 2 is below refill threshold (${targetZone.balance.currentMoisture}%). Weather models project ${tomorrowForecast.rain} mm rain (${tomorrowForecast.precipitationProbability}% prob) tomorrow.`;
+    adviceReason = `Zone 2 is below refill threshold (${Math.round(targetZone.balance.currentMoisture)}%). Weather models project ${tomorrowForecast.rain} mm rain (${tomorrowForecast.precipitationProbability}% prob) tomorrow.`;
     nextStep = `If local sky confirms rain, postpone 12-24h to conserve water; if rain fails by tomorrow morning, irrigate with ${depthText} (${volText}).`;
   } else if (hasStressedZone) {
     status = 'NEEDS_WATER';
@@ -628,8 +628,8 @@ export function evaluateFieldIrrigation({
       ? 'Water Needed: Whole Field Below Refill Point'
       : `Water Needed: ${targetZoneName} Below Refill Point`;
     text = isWholeFieldStressed
-      ? `All zones are below refill threshold (${fieldBalance.refillThreshold}%). Field average moisture is ${fieldBalance.currentMoisture}%.`
-      : `Soil moisture in ${targetZoneName} is ${targetZone.balance.currentMoisture}% (Refill point: ${targetZone.balance.refillThreshold}%).`;
+      ? `All zones are below refill threshold (${Math.round(fieldBalance.refillThreshold)}%). Field average moisture is ${Math.round(fieldBalance.currentMoisture)}%.`
+      : `Soil moisture in ${targetZoneName} is ${Math.round(targetZone.balance.currentMoisture)}% (Refill point: ${Math.round(targetZone.balance.refillThreshold)}%).`;
     reason = isWholeFieldStressed
       ? `Whole-field root-zone depletion (${fieldBalance.depletionMm} mm) has exceeded Readily Available Water (${fieldBalance.rawMm} mm).`
       : `Root-zone depletion in ${targetZoneName} (${targetZone.balance.depletionMm} mm) has exceeded Readily Available Water (${targetZone.balance.rawMm} mm).`;
@@ -637,17 +637,17 @@ export function evaluateFieldIrrigation({
     action = `Apply ${depthText} (${volText} theoretical net requirement for ${targetAreaText})${runtimeText} to restore root zone to Field Capacity.`;
     
     adviceStatus = 'Water Needed';
-    adviceReason = `Soil moisture in ${targetZoneName} (${targetZone.balance.currentMoisture}%) has dropped below the ${targetZone.balance.refillThreshold}% refill point.`;
+    adviceReason = `Soil moisture in ${targetZoneName} (${Math.round(targetZone.balance.currentMoisture)}%) has dropped below the ${Math.round(targetZone.balance.refillThreshold)}% refill point.`;
     nextStep = `Irrigate ${targetAreaText} with ${depthText} (${volText} net requirement) to avoid crop stress.`;
   } else if (fieldBalance.isWaterWatch || (mostStressedZone && mostStressedZone.balance.isWaterWatch)) {
     status = 'WATCH';
     priority = 'MEDIUM';
     title = 'Monitor Soil Water: Within Readily Available Range';
-    text = `Soil moisture (${fieldBalance.currentMoisture}%) is between Refill Point (${fieldBalance.refillThreshold}%) and Field Capacity (${fieldBalance.fc}%).`;
+    text = `Soil moisture (${Math.round(fieldBalance.currentMoisture)}%) is between Refill Point (${Math.round(fieldBalance.refillThreshold)}%) and Field Capacity (${Math.round(fieldBalance.fc)}%).`;
     reason = 'Crop is transpiring readily without moisture stress. No urgent watering needed today.';
     action = 'Check soil moisture tomorrow morning before scheduling irrigation.';
     adviceStatus = 'Water Okay Today';
-    adviceReason = `Soil moisture (${fieldBalance.currentMoisture}%) is adequate for crop growth.`;
+    adviceReason = `Soil moisture (${Math.round(fieldBalance.currentMoisture)}%) is adequate for crop growth.`;
     nextStep = 'Monitor readings tomorrow morning.';
   } else {
     status = 'GOOD';
@@ -770,7 +770,7 @@ export function evaluateZoneIrrigation({
   } else if (balance.isWaterNeeded) {
     priority = 'HIGH';
     waterStress = balance.currentMoisture <= balance.criticalThreshold ? 'Critical' : 'High';
-    recommendation = `Soil water in ${zoneName || zoneId} is low (${balance.currentMoisture}%). Refill point is ${balance.refillThreshold}%.`;
+    recommendation = `Soil water in ${zoneName || zoneId} is low (${Math.round(balance.currentMoisture)}%). Refill point is ${Math.round(balance.refillThreshold)}%.`;
     reason = `Root-zone depletion (${balance.depletionMm} mm) exceeds allowable depletion (${balance.rawMm} mm).`;
     actionableAdvice = `Apply ${balance.netIrrigationMm} mm (${balance.volumeLiters.toLocaleString()} L) to restore to Field Capacity.`;
   } else if (balance.isWaterWatch || moistureTrend === 'decreasing' || climateScenario === 'hotDry') {
@@ -783,8 +783,8 @@ export function evaluateZoneIrrigation({
     } else {
       priority = 'MEDIUM';
       waterStress = 'Moderate';
-      recommendation = `Soil water in ${zoneName || zoneId} is in readily available range (${balance.currentMoisture}%).`;
-      reason = `Adequate moisture for crop transpiration (${balance.refillThreshold}% - ${balance.fc}%).`;
+      recommendation = `Soil water in ${zoneName || zoneId} is in readily available range (${Math.round(balance.currentMoisture)}%).`;
+      reason = `Adequate moisture for crop transpiration (${Math.round(balance.refillThreshold)}% - ${Math.round(balance.fc)}%).`;
       actionableAdvice = 'Check soil water tomorrow before deciding to irrigate.';
     }
   }

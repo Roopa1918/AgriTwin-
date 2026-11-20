@@ -61,7 +61,7 @@ export default function WhatMayHappen({ setTab }) {
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t('fieldMonitor.soilWaterContent')}</span>
             <div style={{ fontSize: '1.8rem', fontWeight: 800, color: isZ2Low ? '#f87171' : '#fff' }}>
-              {z2Water?.toFixed(1)}%
+              {Math.round(z2Water)}%
             </div>
           </div>
 
@@ -108,9 +108,9 @@ export default function WhatMayHappen({ setTab }) {
                 <p style={{ fontSize: '0.86rem', color: 'var(--text-muted)' }}>
                   {t('whatMayHappen.soilWaterIs', {
                     status: statusText,
-                    moisture: z.soilWater?.toFixed(1) || '16.0',
+                    moisture: Math.round(z.soilWater ?? 16),
                     action: actionText
-                  }) || `Soil water is ${statusText} at ${z.soilWater?.toFixed(1)}% VWC. ${actionText}`}
+                  }) || `Soil water is ${statusText} at ${Math.round(z.soilWater ?? 16)}% VWC. ${actionText}`}
                 </p>
               </div>
             );

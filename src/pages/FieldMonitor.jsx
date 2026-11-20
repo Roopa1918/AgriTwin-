@@ -186,7 +186,7 @@ export default function FieldMonitor() {
                 </div>
 
                 <div style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', margin: '4px 0' }}>
-                  {z.soilWater?.toFixed(1)}%
+                  {Math.round(z.soilWater)}%
                 </div>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t('fieldMonitor.soilWaterContent')}</span>
 

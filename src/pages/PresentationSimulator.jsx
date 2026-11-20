@@ -72,7 +72,7 @@ export default function PresentationSimulator({ setTab }) {
             </span>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginTop: '4px' }}>
               <span style={{ fontSize: '2.4rem', fontWeight: 800, color: z2Moisture < 25 ? '#f87171' : '#fff', fontFamily: 'var(--font-heading)' }}>
-                {z2Moisture.toFixed(1)}%
+                {Math.round(z2Moisture)}%
               </span>
               <span className={`status-pill ${z2?.status?.toLowerCase() ?? 'good'}`}>
                 {z2?.status ?? 'GOOD'}

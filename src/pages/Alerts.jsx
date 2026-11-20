@@ -65,7 +65,7 @@ export default function Alerts({ onNavigateToPlant, onNavigateTo3D }) {
 
   // 1. Meaningful Water Alert (Only created when soil water is actually stressed)
   const targetZone = scientificRecommendation?.mostStressedZone || zones?.find(z => z.id === 'zone2') || zones?.[1];
-  const targetMoisture = targetZone?.balance?.currentMoisture ?? (typeof targetZone?.soilWater === 'number' ? targetZone.soilWater : 13.8);
+  const targetMoisture = targetZone?.balance?.currentMoisture ?? (typeof targetZone?.soilWater === 'number' ? targetZone.soilWater : 12);
   const targetName = targetZone?.shortName || targetZone?.name || 'Zone 2 (Zone B)';
   const pwp = scientificRecommendation?.pwp ?? activeSoil?.pwp ?? 8.0;
   const refill = scientificRecommendation?.refillThreshold ?? 14.0;
@@ -90,7 +90,7 @@ export default function Alerts({ onNavigateToPlant, onNavigateTo3D }) {
         severity: 'CRITICAL',
         status: isWaterAlertResolved ? 'RESOLVED' : isWaterAlertSeen ? 'SEEN' : 'NEW',
         title: t('alerts.criticalWiltTitle') || '🚨 Critical Stress: Permanent Wilting Point',
-        message: t('alerts.criticalWiltMsg') || `${targetName} soil water (${targetMoisture.toFixed(1)}% VWC) is at or below the Permanent Wilting Point (${Number(pwp).toFixed(1)}%). Crop cells are losing turgor; irreversible wilt damage imminent.`,
+        message: t('alerts.criticalWiltMsg') || `${targetName} soil water (${Math.round(targetMoisture)}% VWC) is at or below the Permanent Wilting Point (${Math.round(Number(pwp))}%). Crop cells are losing turgor; irreversible wilt damage imminent.`,
         zoneName: targetName,
         timestamp: t('fieldTwin.justNowLive') || 'Just now (Live)',
         action: t('alerts.criticalWiltAction') || `Trigger emergency irrigation immediately to prevent crop loss (${netMm} mm / ~${volLiters.toLocaleString()} L net requirement).`
@@ -103,10 +103,10 @@ export default function Alerts({ onNavigateToPlant, onNavigateTo3D }) {
         severity: 'WARNING',
         status: isWaterAlertResolved ? 'RESOLVED' : isWaterAlertSeen ? 'SEEN' : 'NEW',
         title: t('alerts.waterDeficitTitle') || '💧 Readily Available Water (RAW) Depleted',
-        message: t('alerts.waterDeficitMsg') || `${targetName} soil water is at ${targetMoisture.toFixed(1)}% VWC — below the ${Number(refill).toFixed(1)}% refill threshold (depletion Dr = ${Number(depletion).toFixed(1)} mm has exceeded RAW = ${Number(raw).toFixed(1)} mm). Plants are in water deficit but have NOT reached Permanent Wilting Point (${Number(pwp).toFixed(1)}%).`,
+        message: t('alerts.waterDeficitMsg') || `${targetName} soil water is at ${Math.round(targetMoisture)}% VWC — below the ${Math.round(Number(refill))}% refill threshold (depletion Dr = ${Number(depletion).toFixed(1)} mm has exceeded RAW = ${Number(raw).toFixed(1)} mm). Plants are in water deficit but have NOT reached Permanent Wilting Point (${Math.round(Number(pwp))}%).`,
         zoneName: targetName,
         timestamp: t('fieldTwin.justNowLive') || 'Just now (Live)',
-        action: t('alerts.waterDeficitAction') || `Apply ${netMm} mm of irrigation (~${volLiters.toLocaleString()} L theoretical net requirement for ${areaText}${runtimeText}) to restore root zone to Field Capacity (${Number(fc).toFixed(1)}%).`
+        action: t('alerts.waterDeficitAction') || `Apply ${netMm} mm of irrigation (~${volLiters.toLocaleString()} L theoretical net requirement for ${areaText}${runtimeText}) to restore root zone to Field Capacity (${Math.round(Number(fc))}%).`
       };
     }
   }

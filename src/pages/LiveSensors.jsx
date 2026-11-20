@@ -149,7 +149,7 @@ export default function LiveSensors() {
                 </span>
                 <div className="metric-card-value-row" style={{ marginTop: '2px' }}>
                   <span className="metric-card-value" style={{ color: isOffline ? '#64748b' : '#fff' }}>
-                    {isOffline ? '---' : typeof sensor.value === 'number' ? sensor.value.toFixed(1) : sensor.value}
+                    {isOffline ? '---' : typeof sensor.value === 'number' ? (sensor.type?.toLowerCase().includes('moisture') || sensor.parameter?.toLowerCase().includes('moisture') || sensor.parameter?.toLowerCase().includes('soil water') || sensor.parameter?.toLowerCase().includes('water content') ? Math.round(sensor.value) : sensor.value.toFixed(1)) : sensor.value}
                   </span>
                   <span className="metric-card-unit">{sensor.unit}</span>
                 </div>

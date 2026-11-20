@@ -30,7 +30,7 @@ export function checkAlertConditions({
         zoneName: zone.shortName || zone.name,
         type: 'CRITICAL_WILT',
         severity: 'CRITICAL',
-        message: `${zone.shortName || zone.name} soil water (${moisture.toFixed(1)}%) is dangerously close to Permanent Wilting Point (${pwp}%).`,
+        message: `${zone.shortName || zone.name} soil water (${Math.round(moisture)}%) is dangerously close to Permanent Wilting Point (${Math.round(pwp)}%).`,
         recommendedAction: 'Trigger irrigation cycle immediately to avoid permanent plant wilt.'
       });
     }
@@ -41,7 +41,7 @@ export function checkAlertConditions({
         zoneName: zone.shortName || zone.name,
         type: 'LOW_MOISTURE',
         severity: 'WARNING',
-        message: `${zone.shortName || zone.name} soil water (${moisture.toFixed(1)}%) is at or below the ${refillThreshold}% refill point (RAW depleted).`,
+        message: `${zone.shortName || zone.name} soil water (${Math.round(moisture)}%) is at or below the ${Math.round(refillThreshold)}% refill point (RAW depleted).`,
         recommendedAction: 'Schedule irrigation cycle today to restore root zone to Field Capacity.'
       });
     }
@@ -53,7 +53,7 @@ export function checkAlertConditions({
         zoneName: zone.shortName || zone.name,
         type: 'RAPID_DECLINE',
         severity: 'WARNING',
-        message: `${zone.shortName || zone.name} soil water is decreasing rapidly (-${dropRate.toFixed(1)}%).`,
+        message: `${zone.shortName || zone.name} soil water is decreasing rapidly (-${Math.round(dropRate)}%).`,
         recommendedAction: 'Inspect root-zone infiltration and verify soil matrix drainage.'
       });
     }

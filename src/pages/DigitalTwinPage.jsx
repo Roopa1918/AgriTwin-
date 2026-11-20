@@ -60,7 +60,7 @@ export default function DigitalTwinPage() {
               className={`btn btn-sm ${selectedZoneId === z.id ? 'btn-primary' : 'btn-secondary'}`}
               style={{ fontSize: '0.78rem', padding: '5px 10px' }}
             >
-              {z.shortName} ({z.moisture?.toFixed(1)}%)
+              {z.shortName} ({Math.round(z.moisture)}%)
             </button>
           ))}
         </div>

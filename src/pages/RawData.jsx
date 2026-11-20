@@ -180,7 +180,7 @@ export default function RawData() {
                   <span style={{ color: '#cbd5e1' }}>{row.zoneId || 'field'}</span>
                   <span>{row.parameter}</span>
                   <strong style={{ color: isCriticalVal ? '#f87171' : '#fff' }}>
-                    {typeof row.value === 'number' ? row.value.toFixed(1) : row.value}
+                    {typeof row.value === 'number' ? (row.parameter?.toLowerCase().includes('moisture') || row.parameter?.toLowerCase().includes('soil water') || row.parameter?.toLowerCase().includes('water content') ? Math.round(row.value) : row.value.toFixed(1)) : row.value}
                   </strong>
                   <span style={{ color: '#94a3b8' }}>{row.unit}</span>
                   <span style={{ color: row.status === 'OK' ? '#34d399' : '#f87171', fontWeight: 700 }}>

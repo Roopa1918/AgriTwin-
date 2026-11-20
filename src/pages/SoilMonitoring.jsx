@@ -111,7 +111,7 @@ export default function SoilMonitoring({ setTab }) {
                 </span>
                 <div className="metric-card-value-row">
                   <span className="metric-card-value" style={{ color: isCritical ? '#f87171' : isModerate ? '#fbbf24' : '#fff' }}>
-                    {zone.moisture?.toFixed(1)}
+                    {Math.round(zone.moisture)}
                   </span>
                   <span className="metric-card-unit">%</span>
                 </div>
@@ -172,7 +172,7 @@ export default function SoilMonitoring({ setTab }) {
           <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: 'var(--radius-md)', borderLeft: '4px solid var(--emerald-400)' }}>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Topsoil Horizon (0 – 15 cm)</span>
             <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', margin: '4px 0' }}>
-              {(parseFloat(zones[1]?.moisture ?? 40) * 0.92).toFixed(1)}% VWC
+              {Math.round(parseFloat(zones[1]?.moisture ?? 40) * 0.92)}% VWC
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>High diurnal evaporation; direct microclimate exposure.</p>
           </div>
@@ -180,7 +180,7 @@ export default function SoilMonitoring({ setTab }) {
           <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: 'var(--radius-md)', borderLeft: '4px solid #38bdf8' }}>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Effective Root-Zone (15 – 45 cm)</span>
             <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', margin: '4px 0' }}>
-              {zones[1]?.moisture?.toFixed(1) ?? '41.8'}% VWC
+              {Math.round(zones[1]?.moisture ?? 42)}% VWC
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Primary maize root water absorption layer; critical irrigation determinant.</p>
           </div>
@@ -188,7 +188,7 @@ export default function SoilMonitoring({ setTab }) {
           <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: 'var(--radius-md)', borderLeft: '4px solid #a855f7' }}>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Subsoil Buffer (45 – 90 cm)</span>
             <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', margin: '4px 0' }}>
-              {(parseFloat(zones[1]?.moisture ?? 40) * 1.12).toFixed(1)}% VWC
+              {Math.round(parseFloat(zones[1]?.moisture ?? 40) * 1.12)}% VWC
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Deep hydraulic recharge zone; buffers transient surface evaporation.</p>
           </div>

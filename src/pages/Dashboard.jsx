@@ -130,7 +130,7 @@ export default function Dashboard({ setTab }) {
 
         <MetricCard
           title="Zone 2 Moisture"
-          value={`${z2?.moisture?.toFixed(1) ?? '41.8'}`}
+          value={`${Math.round(z2?.moisture ?? 42)}`}
           unit="%"
           icon={Activity}
           status={z2?.moisture < 25 ? 'critical' : z2?.moisture < 40 ? 'moderate' : 'good'}
@@ -243,7 +243,7 @@ export default function Dashboard({ setTab }) {
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '12px' }}>
                   <div>
                     <span style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff' }}>
-                      {zone.moisture?.toFixed(1)}%
+                      {Math.round(zone.moisture)}%
                     </span>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>Soil Moisture</span>
                   </div>

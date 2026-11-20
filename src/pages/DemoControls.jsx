@@ -73,7 +73,7 @@ export default function DemoControls({ setTab }) {
               Active Field: {activeField?.name} &bull; Zone 2 Target
             </span>
             <div style={{ fontSize: '2.2rem', fontWeight: 800, color: z2Water <= refillThreshold ? '#f87171' : '#fff' }}>
-              Zone 2 {t('fieldMonitor.soilWaterContent')}: {z2Water?.toFixed(1)}%
+              Zone 2 {t('fieldMonitor.soilWaterContent')}: {Math.round(z2Water)}%
             </div>
           </div>
 
