@@ -265,22 +265,27 @@ export default function WaterPage() {
 
               const isUnavailable = moisture === null || isNaN(moisture);
               const isZoneNeedsWater = !isUnavailable && moisture <= refillThreshold;
+              const isZoneWatch = !isUnavailable && !isZoneNeedsWater && (z.status === 'Watch' || Math.round(moisture) < Math.round(fc));
 
               const statusText = isUnavailable
                 ? (t('water.zoneStatusUnavailable') || 'Data Unavailable')
                 : isZoneNeedsWater
                 ? (t('water.zoneStatusNeedsWater') || 'Needs Water')
+                : isZoneWatch
+                ? (t('water.zoneStatusWatch') || 'Watch')
                 : (t('water.zoneStatusGood') || 'Good');
 
               const descText = isUnavailable
                 ? (t('water.zoneDescUnavailable') || 'Sensor reading unavailable')
                 : isZoneNeedsWater
                 ? (t('water.zoneDescNeedsWater') || 'Below watering level — Needs water')
+                : isZoneWatch
+                ? (t('water.zoneDescWatch') || 'Moisture is below the good range. Keep an eye on it.')
                 : (t('water.zoneDescGood') || 'Moisture is healthy');
 
-              const themeColor = isUnavailable ? '#fbbf24' : isZoneNeedsWater ? '#f87171' : '#34d399';
-              const themeBg = isUnavailable ? 'rgba(245, 158, 11, 0.15)' : isZoneNeedsWater ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)';
-              const themeBorder = isUnavailable ? 'rgba(245, 158, 11, 0.35)' : isZoneNeedsWater ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.3)';
+              const themeColor = isUnavailable || isZoneWatch ? '#fbbf24' : isZoneNeedsWater ? '#f87171' : '#34d399';
+              const themeBg = isUnavailable || isZoneWatch ? 'rgba(245, 158, 11, 0.15)' : isZoneNeedsWater ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)';
+              const themeBorder = isUnavailable || isZoneWatch ? 'rgba(245, 158, 11, 0.35)' : isZoneNeedsWater ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.3)';
 
               // Visual bar calculation scaled to field capacity (100% = Field Capacity)
               const barPercent = isUnavailable
@@ -337,7 +342,7 @@ export default function WaterPage() {
                       <div style={{
                         width: `${barPercent}%`,
                         height: '100%',
-                        background: isUnavailable ? '#fbbf24' : isZoneNeedsWater ? '#ef4444' : '#10b981',
+                        background: isUnavailable || isZoneWatch ? '#fbbf24' : isZoneNeedsWater ? '#ef4444' : '#10b981',
                         borderRadius: '999px',
                         transition: 'width 0.4s ease'
                       }} />
@@ -345,7 +350,7 @@ export default function WaterPage() {
                   </div>
 
                   {/* Simple Farmer-Friendly Explanation */}
-                  <div style={{ fontSize: '0.76rem', color: isZoneNeedsWater ? '#fca5a5' : 'var(--text-dim)', lineHeight: 1.35 }}>
+                  <div style={{ fontSize: '0.76rem', color: isZoneNeedsWater ? '#fca5a5' : isZoneWatch ? '#fcd34d' : 'var(--text-dim)', lineHeight: 1.35 }}>
                     {descText}
                   </div>
                 </div>

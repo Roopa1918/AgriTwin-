@@ -153,7 +153,7 @@ export function TelemetryProvider({ children }) {
           let status = 'Good';
           if (updatedWater <= refillThreshold) {
             status = 'Needs Water';
-          } else if (Math.round(updatedWater) < Math.round(fc) - 1) {
+          } else if (Math.round(updatedWater) < Math.round(fc)) {
             status = 'Watch';
           }
 
