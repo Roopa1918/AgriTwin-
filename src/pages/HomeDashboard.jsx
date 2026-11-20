@@ -115,7 +115,7 @@ export default function HomeDashboard({ setTab }) {
         pillBg: 'rgba(239, 68, 68, 0.22)',
         pillBorder: '#ef4444',
         color: '#f87171',
-        badge: t('home.farmStatusAttention') || 'Attention: Low Moisture in Zone 2'
+        badge: t('home.farmStatusAttention') || 'Attention: Low Moisture in Zone B'
       }
     : {
         border: 'rgba(16, 185, 129, 0.45)',

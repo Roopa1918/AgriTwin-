@@ -31,6 +31,7 @@ export default function TelemetryChart({
   yAxisLabel = '%',
   min = undefined,
   max = undefined,
+  stepSize = undefined,
   height = 240
 }) {
   const options = {
@@ -89,6 +90,7 @@ export default function TelemetryChart({
         ticks: {
           color: '#94a3b8',
           font: { family: "'Inter', sans-serif", size: 11 },
+          stepSize,
           callback: (value) => `${value} ${yAxisLabel}`
         }
       }

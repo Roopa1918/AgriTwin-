@@ -158,7 +158,7 @@ export default {
     "farmerGreeting": "ನಮಸ್ಕಾರ, ರೈತ ಮಿತ್ರರೆ",
     "assistantBrand": "AgriTwin ಕೃಷಿ ಸಹಾಯಕ",
     "farmStatusGood": "ಹೊಲದ ಸ್ಥಿತಿ: ಸಾಮಾನ್ಯ ಮತ್ತು ಉತ್ತಮ",
-    "farmStatusAttention": "ಗಮನಿಸಿ: ವಲಯ 2 ರಲ್ಲಿ ತೇವಾಂಶ ಕಡಿಮೆ",
+    "farmStatusAttention": "ಗಮನಿಸಿ: ವಲಯ B ಯಲ್ಲಿ ತೇವಾಂಶ ಕಡಿಮೆ",
     "farmStatusUnavailable": "ಹೊಲದ ಸ್ಥಿತಿ: ವಿವರ ಲಭ್ಯವಿಲ್ಲ",
     "waterNeededTitle": "ನೀರು ಹಾಯಿಸುವ ಅಗತ್ಯವಿರಬಹುದು",
     "waterNotNeededTitle": "ಈಗ ನೀರು ಹಾಯಿಸುವ ಅಗತ್ಯವಿಲ್ಲ",

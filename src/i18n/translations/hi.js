@@ -158,7 +158,7 @@ export default {
     "farmerGreeting": "नमस्ते, किसान भाई",
     "assistantBrand": "AgriTwin स्मार्ट किसान सहायक",
     "farmStatusGood": "खेत की स्थिति: सामान्य व सुरक्षित",
-    "farmStatusAttention": "ध्यान दें: ज़ोन 2 में नमी कम है",
+    "farmStatusAttention": "ध्यान दें: ज़ोन B में नमी कम है",
     "farmStatusUnavailable": "खेत की स्थिति: जानकारी उपलब्ध नहीं",
     "waterNeededTitle": "सिंचाई की आवश्यकता हो सकती है",
     "waterNotNeededTitle": "अभी सिंचाई की आवश्यकता नहीं है",

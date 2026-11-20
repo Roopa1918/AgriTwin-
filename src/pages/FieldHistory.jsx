@@ -23,18 +23,32 @@ export default function FieldHistory() {
   // Datasets
   const soilWaterDatasets = [
     {
-      label: `Zone 1 ${t('fieldMonitor.soilWaterContent')} (%)`,
+      label: `Zone A ${t('fieldMonitor.soilWaterContent')} (%)`,
       data: historyBuffer.zone1,
       borderColor: '#10b981',
       backgroundColor: 'rgba(16, 185, 129, 0.1)',
       tension: 0.3
     },
     {
-      label: `Zone 2 ${t('fieldMonitor.soilWaterContent')} (%)`,
+      label: `Zone B ${t('fieldMonitor.soilWaterContent')} (%)`,
       data: historyBuffer.zone2,
       borderColor: '#ef4444',
       backgroundColor: 'rgba(239, 68, 68, 0.1)',
       borderWidth: 2.5,
+      tension: 0.3
+    },
+    {
+      label: `Zone C ${t('fieldMonitor.soilWaterContent')} (%)`,
+      data: historyBuffer.zone3,
+      borderColor: '#f59e0b',
+      backgroundColor: 'rgba(245, 158, 11, 0.1)',
+      tension: 0.3
+    },
+    {
+      label: `Zone D ${t('fieldMonitor.soilWaterContent')} (%)`,
+      data: historyBuffer.zone4,
+      borderColor: '#38bdf8',
+      backgroundColor: 'rgba(56, 189, 248, 0.1)',
       tension: 0.3
     }
   ];
@@ -114,8 +128,9 @@ export default function FieldHistory() {
             labels={historyBuffer.times}
             datasets={soilWaterDatasets}
             yAxisLabel="%"
-            min={15}
-            max={55}
+            min={2}
+            max={20}
+            stepSize={2}
             height={260}
           />
         </div>

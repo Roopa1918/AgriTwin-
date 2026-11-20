@@ -158,7 +158,7 @@ export default {
     "farmerGreeting": "Hello, Farmer",
     "assistantBrand": "AgriTwin Smart Farming Assistant",
     "farmStatusGood": "Farm Status: Normal & Healthy",
-    "farmStatusAttention": "Attention: Low Moisture in Zone 2",
+    "farmStatusAttention": "Attention: Low Moisture in Zone B",
     "farmStatusUnavailable": "Farm Status: Data Unavailable",
     "waterNeededTitle": "Water May Be Needed",
     "waterNotNeededTitle": "No Watering Needed Right Now",
