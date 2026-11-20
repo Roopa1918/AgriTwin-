@@ -305,7 +305,7 @@ export default function DynamicDigitalTwin({ height = 540 }) {
         let color = new THREE.Color(0x10b981); // Good
         if (z.status === 'Needs Water' || z.soilWater <= refillThreshold) {
           color = new THREE.Color(0xef4444); // Needs Water
-        } else if (z.status === 'Watch' || z.soilWater < fc) {
+        } else if (z.status === 'Watch') {
           color = new THREE.Color(0xf59e0b); // Watch
         }
         mesh.material.color.lerp(color, 0.4);
@@ -342,7 +342,7 @@ export default function DynamicDigitalTwin({ height = 540 }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '12px', margin: '14px 0' }}>
             {zones.map((z, idx) => {
               const isZoneLow = z.status === 'Needs Water' || z.soilWater <= refillThreshold;
-              const isZoneWatch = z.status === 'Watch' || (z.soilWater > refillThreshold && z.soilWater < fc);
+              const isZoneWatch = z.status === 'Watch';
               return (
                 <div key={z.id} style={{
                   background: isZoneLow ? 'rgba(239, 68, 68, 0.15)' : isZoneWatch ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.1)',

@@ -221,7 +221,7 @@ export const INITIAL_ZONES = [
     shortName: 'Zone 1',
     area: '0.6 ha',
     sensorId: 'SM-Z01',
-    moisture: 17.8, // Near Field Capacity (18.0% FC)
+    moisture: 17, // Good moisture, just below Field Capacity
     temperature: 28.6,
     humidity: 58.2,
     pH: 6.8,
@@ -261,7 +261,7 @@ export const INITIAL_ZONES = [
     shortName: 'Zone 3',
     area: '0.6 ha',
     sensorId: 'SM-Z03',
-    moisture: 16.2, // Adequate (In RAW zone between 14.0% and 18.0%)
+    moisture: 16, // Watch range between refill threshold and 17% good threshold
     temperature: 29.1,
     humidity: 56.4,
     pH: 6.6,
@@ -306,7 +306,7 @@ export const INITIAL_SENSORS = [
     parameter: 'Volumetric Water Content',
     zoneId: 'zone1',
     zoneName: 'Zone 1',
-    value: 17.8,
+    value: 17,
     unit: '%',
     status: 'Online',
     battery: 98,
@@ -336,7 +336,7 @@ export const INITIAL_SENSORS = [
     parameter: 'Volumetric Water Content',
     zoneId: 'zone3',
     zoneName: 'Zone 3',
-    value: 16.2,
+    value: 16,
     unit: '%',
     status: 'Online',
     battery: 92,

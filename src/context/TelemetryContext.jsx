@@ -57,9 +57,9 @@ export function TelemetryProvider({ children }) {
   // History buffer for graphs (Today / 7 Days / 30 Days)
   const [historyBuffer, setHistoryBuffer] = useState({
     times: ['06:00', '08:00', '10:00', '12:00', '14:00', '16:00', '18:00'],
-    zone1: [18.0, 17.9, 17.8, 17.7, 17.8, 17.8, 17.8],
+    zone1: [17, 17, 17, 17, 17, 17, 17],
     zone2: [17, 17, 16, 15, 14, 12, 12],
-    zone3: [16.8, 16.6, 16.4, 16.3, 16.2, 16.2, 16.2],
+    zone3: [16, 16, 16, 16, 16, 16, 16],
     zone4: [18.0, 18.0, 18.0, 17.9, 18.0, 18.0, 18.0],
     temperatures: [24, 26, 28, 30, 31, 29, 27],
     rainfall: [0, 0, 0, 0, 0, 2.0, 0]
@@ -153,7 +153,7 @@ export function TelemetryProvider({ children }) {
           let status = 'Good';
           if (updatedWater <= refillThreshold) {
             status = 'Needs Water';
-          } else if (updatedWater < fc) {
+          } else if (Math.round(updatedWater) < Math.round(fc) - 1) {
             status = 'Watch';
           }
 
